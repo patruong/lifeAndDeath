@@ -12,7 +12,7 @@ from helper import *
 
 
 
-df = pd.read_csv("proteinGroups tryptic.txt", sep = "\t")
+df = pd.read_csv("proteinGroups_tryptic_head2000.csv", sep = "\t")
 
 # peptide file
 df["MS/MS Count"]
@@ -95,8 +95,14 @@ def treshold_by_peptides(intensities, peptide_counts, treshold = 1):
 
 treshold_by_peptides(df["Reporter intensity corrected 0 A549_D_Rep1"], df["Unique peptides A549_D_Rep1"])
 
+peptide_count_1 = df["Peptides A549_D_Rep1"]
+peptide_count_2 = df["Peptides A549_D_Rep2"]
 
+intensities_1 = df["Reporter intensity corrected 0 A549_D_Rep1"]
+intensities_2 = df["Reporter intensity corrected 0 A549_D_Rep2"]
 
+t_1 = treshold_by_peptides(intensities_1, peptide_count_1)
+t_2 = treshold_by_peptides(intensities_2, peptide_count_2)
 
 
 def gen_cell_lines_states_replicates():
@@ -127,7 +133,7 @@ def add_prefix_with_treatments(prefix = "Reporter intensity corrected", treatmen
             res_list.append(unit_str)
     return res_list
 
-def add_prefix(prefix = "Unique peptides"):
+def add_prefix(prefix = "Peptides"):
     var_list = gen_cell_lines_states_replicates()
     prefix = prefix
     res_list = []
@@ -140,21 +146,39 @@ def add_prefix(prefix = "Unique peptides"):
 reporter_intensity_corrected = add_prefix_with_treatments()
 unique_peptides = add_prefix()
 
-
-
 data = pd.DataFrame()
 #data[df[i].name] = df[i].values
 #data[df["Reporter intensity corrected 9 RKO_S_Rep2"].name] = df["Reporter intensity corrected 9 RKO_S_Rep2"].values
-for i in reporter_intensity_corrected:
-    for j in unique_peptides:
+"""
+for i in reporter_intensity_corrected[:]:
+    for j in unique_peptides[:]:
+        print(i + "####" + j)
         data[df[i].name] = treshold_by_peptides(df[i], df[j])
+"""
 
+for i in unique_peptides:
+    for j in reporter_intensity_corrected:
+        if i.split()[-1] == j.split()[-1]:
+            print(i + "\t - \t" + j)
+            data[df[j].name] = treshold_by_peptides(df[j], df[i])
+            
+#Count Na --> 
 
+print(df.head())
 
+peptide_count_1 = df["Peptides A549_D_Rep1"]
+peptide_count_2 = df["Peptides A549_D_Rep2"]
 
+intensities_1 = df["Reporter intensity corrected 0 A549_D_Rep1"]
+intensities_2 = df["Reporter intensity corrected 0 A549_D_Rep2"]
 
+t_1 = treshold_by_peptides(intensities_1, peptide_count_1)
+t_2 = treshold_by_peptides(intensities_2, peptide_count_2)
 
-treshold_by_peptides(df["Reporter intensity corrected "])
+def count_nan(df):
+    count_nan = len(df) - df.count()
+    return count_nan
+
 treshold_by_peptides(df["Reporter intensity corrected "])
 treshold_by_peptides(df["Reporter intensity corrected "])
 treshold_by_peptides(df["Reporter intensity corrected "])
@@ -187,6 +211,9 @@ df = df[cols]
 normalized_df=(df-df.mean())/df.std()
 
 # Take subset
+
+# Check to check tresholding
+df.iloc[:,13:20]
 
 
 
