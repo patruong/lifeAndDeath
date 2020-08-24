@@ -26,7 +26,8 @@ if __name__ == "__main__":
     data = create_full_data(data_file = filename, treshold = 1)
 
     data = data.fillna(0) # Input missing values to zero
-    data = normalize(data)
+    data = log2FC_data(data)
+    #data = normalize(data)
     data_values, target_drugs, cell_lines, states, replicates = split_data(data)
     data_vals = data.T # create a data value df
     data = data.T
@@ -87,7 +88,8 @@ plt.show()
 ###########
 
 time_start = time.time()
-tsne = TSNE(n_components=2, verbose=1, perplexity=40, n_iter=300)
+tsne = TSNE(n_components=2, verbose=1, perplexity=100, n_iter=5000)
+#tsne = TSNE(n_components=2, verbose=1, perplexity=100, n_iter=300)
 tsne_results = tsne.fit_transform(data_vals)
 print('t-SNE done! Time elapsed: {} seconds'.format(time.time()-time_start))
 

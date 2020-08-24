@@ -83,7 +83,25 @@ def create_full_data(data_file = "proteinGroups_tryptic_head2000.csv", treshold 
                 data[df[j].name] = treshold_by_peptides(df[j], df[i], treshold = treshold)
     return data
 
-
+def log2FC_data(data):
+    """
+    Converts full data to log2FC values. Use non-normalized values from create_full_data
+    """
+    log2FC_df = pd.DataFrame()
+    for i in range(0,len(data.columns),10):
+        i = i
+        data_subset = data[data.columns[i:i+10]]
+        log_data = data_subset.apply(np.log2)
+    
+        new_df = pd.DataFrame()
+        for j in range(len(log_data.columns)):
+            tmp_col = log_data.iloc[:, j].name
+            tmp_df = log_data.iloc[:,0] - log_data.iloc[:,j]
+            new_df[tmp_col] = tmp_df
+            
+        log2FC_df = log2FC_df.append(new_df.T)
+    log2FC_df = log2FC_df.T
+    return log2FC_df
 
 def treshold_by_peptides(intensities, peptide_counts, treshold = 1):
     """
