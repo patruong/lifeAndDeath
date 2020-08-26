@@ -27,11 +27,13 @@ if __name__ == "__main__":
 
     data = data.fillna(0) # Input missing values to zero
     data = log2FC_data(data)
+    data = data.replace([np.inf, -np.inf], np.nan)
+    data = data.fillna(0) # Input missing values to zero
     #data = normalize(data)
     data_values, target_drugs, cell_lines, states, replicates = split_data(data)
     data_vals = data.T # create a data value df
-    data = data.T
     data['target_drug'] = target_drugs
+    data = data.T
     data['cell_line'] = cell_lines
     data['states'] = states
     data['replicates'] = replicates
