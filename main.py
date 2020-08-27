@@ -25,11 +25,12 @@ if __name__ == "__main__":
     filename = "proteinGroups tryptic.txt"
     data = create_full_data(data_file = filename, treshold = 1)
 
-    data = data.fillna(0) # Input missing values to zero
-    data = log2FC_data(data)
-    data = data.replace([np.inf, -np.inf], np.nan)
-    data = data.fillna(0) # Input missing values to zero
-    #data = normalize(data)
+    #data = data.fillna(0) # Input missing values to zero
+    #data = log2FC_data(data)
+    #data = data.replace([np.inf, -np.inf], np.nan)
+    #data = data.fillna(0) # Input missing values to zero
+    data = normalize(data)
+    data = data.fillna(0)
     data_values, target_drugs, cell_lines, states, replicates = split_data(data)
     data_vals = data.T # create a data value df
     data['target_drug'] = target_drugs

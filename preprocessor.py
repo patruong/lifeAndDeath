@@ -60,7 +60,7 @@ def gen_cell_lines_states_replicates():
 
 
 
-def create_full_data(data_file = "proteinGroups_tryptic_head2000.csv", treshold = 1):
+def create_full_data(data_file = "proteinGroups_tryptic_head2000.csv", treshold = 1, proteinID_index = True):
     """
     Creates a matrix with onlye Reporter intensity corrected_treatment_cellLine_replicates
     
@@ -81,6 +81,9 @@ def create_full_data(data_file = "proteinGroups_tryptic_head2000.csv", treshold 
             if i.split()[-1] == j.split()[-1]:
                 #print(i + "\t - \t" + j)
                 data[df[j].name] = treshold_by_peptides(df[j], df[i], treshold = treshold)
+    # rename index
+    if proteinID_index == True:
+        data = data.rename(index=dict(zip(list(range(len(data))), list(df["Protein IDs"]))))
     return data
 
 def log2FC_data(data):
