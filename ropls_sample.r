@@ -14,8 +14,10 @@ attach(sacurine)
 #view(dataMatrix)
 
 #heatmap(dataMatrix)
+datMatrix <- sacurine$dataMatrix
 
 # PCA
+sacurine.pca <- opls(datMatrix)
 sacurine.pca <- opls(dataMatrix)
 
 genderFc <- sampleMetadata[, "gender"]
