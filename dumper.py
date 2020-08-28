@@ -11,8 +11,9 @@ from __future__ import print_function
 import time
 import numpy as np
 import pandas as pd
-from preprocessor import *
 
+from preprocessor import *
+from stats import *
 
 def get_sample_metadata(data):
     """
@@ -53,7 +54,7 @@ def rename_cols(data):
                     "Vincristine",
                     "Bortezomib"]
     treatment_number = list(range(0,10))
-    treatment_dict = dict(zip(treatment_number, treatment_list))
+    treatment_dict = dict(zip(treatment_number, treatsment_list))
     col_names = []
     for i in data.columns:
         col = i[29:-5]
@@ -70,8 +71,9 @@ if __name__ == "__main__":
 #    data = data.fillna(0) # Input missing values to zero
     data = normalize(data)
     data.fillna(0)
-    data = rename_cols(data) #just renames cols
     sample_meta_data = get_sample_metadata(data)
+    data_new_cols = rename_cols(data) #just renames cols
+    
     sample_meta_data.to_csv("proteinGroups_tryptic_sampleMetadata.csv", sep = ",")
-    data.to_csv("proteinGroups_tryptic_reporterIntensities.csv", sep = ",")
+    data_new_cols.to_csv("proteinGroups_tryptic_reporterIntensities.csv", sep = ",")
 
