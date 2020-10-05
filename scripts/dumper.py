@@ -54,7 +54,7 @@ def rename_cols(data):
                     "Vincristine",
                     "Bortezomib"]
     treatment_number = list(range(0,10))
-    treatment_dict = dict(zip(treatment_number, treatsment_list))
+    treatment_dict = dict(zip(treatment_number, treatment_list))
     col_names = []
     for i in data.columns:
         col = i[29:-5]
@@ -74,6 +74,6 @@ if __name__ == "__main__":
     sample_meta_data = get_sample_metadata(data)
     data_new_cols = rename_cols(data) #just renames cols
     
-    sample_meta_data.to_csv("proteinGroups_tryptic_sampleMetadata.csv", sep = ",")
-    data_new_cols.to_csv("proteinGroups_tryptic_reporterIntensities.csv", sep = ",")
+    sample_meta_data.to_csv("proteinGroups_tryptic_sampleMetadata_noNorm.csv", sep = ",")
+    data_new_cols.to_csv("proteinGroups_tryptic_reporterIntensities_noNorm.csv", sep = ",")
 

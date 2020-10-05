@@ -23,12 +23,37 @@ replicate <- sampleMetadata[, "replicate"]
 #view(dataMatrix)
 #sacurine.pca <- opls(dataMatrix)
 
-
 data.pca <- opls(dataMatrix)
 data.pca <- opls(dataMatrix, states)
 
 plot(data.pca,
      typeVc = "x-score",
      parAsColFcVn = states)
+
+
+
+####
+
+
+# Select treatment
+treatment_str <- "Nutlin"
+dataMatrix_ <- data[,which(treatment %in% treatment_str)]
+#dataMatrix_ <- t(dataMatrix_)
+
+states_ <- states[which(treatment %in% treatment_str)]
+
+data.pca_ <- opls(dataMatrix_)
+
+plot(data.pca_,
+     typeVc = "x-score",
+     parAsColFcVn = states_)
+
+
+
+
+
+
+
+
 
 

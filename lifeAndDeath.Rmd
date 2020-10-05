@@ -1,0 +1,61 @@
+---
+title: "Life and Death"
+author: "ptruong"
+date: "September 23, 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+# Load the data
+data <- read.table("data/proteinGroups_tryptic_reporterIntensities.csv", sep = ",", header = TRUE, row.names = 1)
+dataMatrix <- data.matrix(data)
+dataMatrix <- t(dataMatrix)
+
+sampleMetadata <- read.table("data/proteinGroups_tryptic_sampleMetadata.csv", sep = ",", header = TRUE, row.names = 1)
+treatment <- sampleMetadata[, "treatment"]
+states <- sampleMetadata[, "state"]
+cell_line <- sampleMetadata[, "cell_line"]
+replicate <- sampleMetadata[, "replicate"]
+
+```
+
+```{r}
+data
+```
+
+
+```{r}
+sampleMetadata
+```
+
+
+
+
+```{r}
+dim(sampleMetadata)
+dim(data)
+
+```
+
+```{r}
+subst <- dataMatrix[which(treatment %in% "Nutlin"),]
+subst
+```
+
+```{r}
+data[,which(treatment %in% "Nutlin")]
+```
+
+
+
+
+
+
+
+
+

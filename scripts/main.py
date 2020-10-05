@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 from sklearn.datasets import fetch_mldata
 from sklearn.decomposition import PCA
+from sklearn.decomposition import FastICA
 from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -22,6 +23,7 @@ from stats import *
 from plotting import *
 
 if __name__ == "__main__":    
+    """
     filename = "proteinGroups tryptic.txt"
     data = create_full_data(data_file = filename, treshold = 1)
 
@@ -35,6 +37,23 @@ if __name__ == "__main__":
     data_vals = data.T # create a data value df
     data['target_drug'] = target_drugs
     data = data.T
+    data['cell_line'] = cell_lines
+    data['states'] = states
+    data['replicates'] = replicates
+    data["marker"] = data["cell_line"]+"_"+data["states"]
+    target_drug_map = convert_treatmentN_to_treatmentStr(data)
+    data["treatment"] = data.replace({"target_drug": target_drug_map}).target_drug
+    """
+
+    filename = "proteinGroups tryptic.txt"
+    data = create_full_data(data_file = filename, treshold = 1)
+
+    data = data.fillna(0) # Input missing values to zero
+    data = normalize(data)
+    data_values, target_drugs, cell_lines, states, replicates = split_data(data)
+    data_vals = data.T # create a data value df
+    data = data.T
+    data['target_drug'] = target_drugs
     data['cell_line'] = cell_lines
     data['states'] = states
     data['replicates'] = replicates
@@ -72,6 +91,28 @@ ax = sns.scatterplot(x="pca-one", y="pca-two",
                      #markers=markers,
                      data=data.loc[rndperm,:])
 
+plt.figure(figsize=(16,10))
+#markers = {'A549':"s", 'MCF7':"X", 'RKO':"o"}
+ax = sns.scatterplot(x="pca-one", y="pca-three", 
+                     style="marker",
+                     hue = "treatment",
+                     palette=sns.color_palette("hls", len(np.unique(data.target_drug))),
+                     legend="full",
+                     alpha=0.7,
+                     #markers=markers,
+                     data=data.loc[rndperm,:])
+
+plt.figure(figsize=(16,10))
+#markers = {'A549':"s", 'MCF7':"X", 'RKO':"o"}
+ax = sns.scatterplot(x="pca-two", y="pca-three", 
+                     style="marker",
+                     hue = "treatment",
+                     palette=sns.color_palette("hls", len(np.unique(data.target_drug))),
+                     legend="full",
+                     alpha=0.7,
+                     #markers=markers,
+                     data=data.loc[rndperm,:])
+
 # PCA plot 3D
 ax = plt.figure(figsize=(16,10)).gca(projection='3d')
 ax.scatter(
@@ -85,6 +126,26 @@ ax.set_xlabel('pca-one')
 ax.set_ylabel('pca-two')
 ax.set_zlabel('pca-three')
 plt.show()
+
+#Seaborn pair plot
+x = data.loc[rndperm,:]["pca-one"]
+y = data.loc[rndperm,:]["pca-two"]
+z = data.loc[rndperm,:]["pca-three"]
+
+df_3d = pd.DataFrame()
+df_3d['pc1'] = x
+df_3d['pc2'] = y
+df_3d['pc3'] = z
+df_3d["treatment"] = data.treatment
+df_3d["cell_line"] = data.marker
+
+sns.pairplot(df_3d, hue = "treatment",
+             plot_kws=dict(style = data.marker, linewidth=1))
+
+sns.pairplot(df_3d, hue = "cell_line")
+
+sns.pairplot(df_3d, hue = "treatment")
+
 
 ###########
 # t-SNE ###
@@ -138,14 +199,50 @@ plt.show()
 ########
 # t-SNE on PCA (dim reduced)
 
+# Compute ICA
+ica = FastICA(n_components=3)
+S_ = ica.fit_transform(data_vals.T)  # Reconstruct signals
+ica_result = ica.mixing_  # Get estimated mixing matrix
+
+data['ica-one'] = ica_result[:,0]
+data['ica-two'] = ica_result[:,1] 
+data['ica-three'] = ica_result[:,2]
 
 
+# ICA plot 2D
+plt.figure(figsize=(16,10))
+#markers = {'A549':"s", 'MCF7':"X", 'RKO':"o"}
+ax = sns.scatterplot(x="ica-one", y="ica-two", 
+                     style="marker",
+                     hue = "treatment",
+                     palette=sns.color_palette("hls", len(np.unique(data.target_drug))),
+                     legend="full",
+                     alpha=0.7,
+                     #markers=markers,
+                     data=data.loc[rndperm,:])
+
+#markers = {'A549':"s", 'MCF7':"X", 'RKO':"o"}
+ax = sns.scatterplot(x="ica-one", y="ica-three", 
+                     style="marker",
+                     hue = "treatment",
+                     palette=sns.color_palette("hls", len(np.unique(data.target_drug))),
+                     legend="full",
+                     alpha=0.7,
+                     #markers=markers,
+                     data=data.loc[rndperm,:])
+
+#markers = {'A549':"s", 'MCF7':"X", 'RKO':"o"}
+ax = sns.scatterplot(x="ica-two", y="ica-three", 
+                     style="marker",
+                     hue = "treatment",
+                     palette=sns.color_palette("hls", len(np.unique(data.target_drug))),
+                     legend="full",
+                     alpha=0.7,
+                     #markers=markers,
+                     data=data.loc[rndperm,:])
 
 
-
-
-
-
+# PERFORM OPLS WITH EACH TREATMENT SEPERATED.
 
 
 
