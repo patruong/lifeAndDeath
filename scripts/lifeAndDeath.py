@@ -213,11 +213,6 @@ df_logFc.columns[0]
 
 
 
-#TIPS
-tips = sns.load_dataset("tips")
-ax = sns.barplot(x="day", y="total_bill", data=tips)
-
-
 
 
 

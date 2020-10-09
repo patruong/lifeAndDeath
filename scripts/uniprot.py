@@ -15,17 +15,20 @@ def go_class(code):
     data = requests.get("https://www.uniprot.org/uniprot/"+ code + ".txt").content.decode("utf-8").split("\n")
     
     # Gene-Ontology protein Classification
-    data_ = []
+    go_vals = []
     for i in data:
         vals = i.split()
         try:
             if vals[1] == "GO;":
-                print(vals)
+                go_row = i.split(";")
+                go_vals.append(go_row[2])
         except:
             continue
         #data_.append(i.split())
+    return go_vals
 
-go_class("A0A0D9SFH9")
+a = go_class("A0A0D9SFH9")
+
 go_class("A0A075B6E5")
 go_class("P13726")
 go_class("P13726-2")
@@ -39,5 +42,7 @@ df = pd.DataFrame(data)
 
 df_logFc.columns[10000] # from lifeAndDeath.py
 
+
+# How to go about the protein counting?
 
 
