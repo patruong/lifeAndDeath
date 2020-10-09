@@ -291,7 +291,11 @@ for i in range(len(reporter_intensity_corrected)):
 t_proc_end = time.time()
 print(t_proc_end - t_proc_start)
 
+res = pd.DataFrame(rows, columns = ["Leading_razor_protein", "Proteins", "Reporter_intensity_count",
+        "Gene_names", "Charges", "Missed_Cleaveges", "PEP", "Score", 
+        "Cell_line", "Treatment", "State", "Replicate", "Reporter_intensity_corrected"])
 
+res.to_csv("peptied_tryptic_proc_melted.csv", sep = "\t", index = False)
 # peptide tresholding and q-value tresholding 
 # protein name
 
