@@ -86,6 +86,7 @@ def create_full_data(data_file = "proteinGroups_tryptic_head2000.csv", treshold 
         data = data.rename(index=dict(zip(list(range(len(data))), list(df["Protein IDs"]))))
     return data
 
+
 def log2FC_data(data):
     """
     Converts full data to log2FC values. Use non-normalized values from create_full_data
@@ -236,3 +237,85 @@ def split_data(data):
     replicates = np.array(replicates)
     
     return data_values, target_drugs, cell_lines, states, replicates
+
+def create_data_melted_peptide_tryptic_file():
+    print("fill in")
+    return
+
+protein_file = "proteinGroups tryptic.txt"
+peptide_file = "peptides tryptic.txt"
+
+
+import time 
+
+df_protein = pd.read_csv(protein_file, sep = "\t")
+df = pd.read_csv(peptide_file, sep = "\t")
+
+treshold = treshold
+df = pd.read_csv(data_file, sep = "\t")
+
+
+reporter_intensity_corrected = add_prefix_with_treatments(prefix = "Reporter intensity corrected", treatments = 10)
+reporter_intensity_count = add_prefix_with_treatments(prefix = "Reporter intensity count", treatments = 10)
+
+cols = ["Leading_razor_protein", "Proteins", "Reporter_intensity_count",
+        "Gene_names", "Charges", "Missed_Cleaveges", "PEP", "Score", 
+        "Cell_line", "Treatment", "State", "Replicate", "Reporter_intensity_corrected"]
+rows = []
+t_proc_start = time.time()
+for i in range(len(reporter_intensity_corrected)):
+    print(str(i) + "/" + str(len(reporter_intensity_corrected)))
+    print(time.time() - t_proc_start)
+    for j in range(len(df[reporter_intensity_corrected[i]])):
+        intensity = df[reporter_intensity_corrected[i]][j]
+        count = df[reporter_intensity_count[i]][j]
+        PEP = df["PEP"][j]
+        score = df["Score"][j]
+        charges = df["Charges"][j] # Do we need this?
+        missed_cleaveges = df["Missed cleavages"][j]
+        proteins = df["Proteins"][j]
+        razor_protein = df["Leading razor protein"][j]
+        gene = df["Gene names"][j]
+        
+        split_ = reporter_intensity_corrected[i].split()
+        split__ = split_[-1].split("_")
+        
+        cell_line = split__[0]
+        treatment = split_[-2]
+        state =  split__[1]
+        replicate = split__[2]
+        
+        row = [razor_protein, proteins, count, gene, charges, missed_cleaveges, PEP, 
+               score, cell_line, treatment, state, replicate, intensity]
+        rows.append(row)
+t_proc_end = time.time()
+print(t_proc_end - t_proc_start)
+
+
+# peptide tresholding and q-value tresholding 
+# protein name
+
+data =
+
+
+
+    treshold = treshold
+    df = pd.read_csv(data_file, sep = "\t")
+    reporter_intensity_corrected = add_prefix_with_treatments()
+    unique_peptides = add_prefix()
+    
+    data = pd.DataFrame()
+    
+    for i in unique_peptides:
+        for j in reporter_intensity_corrected:
+            if i.split()[-1] == j.split()[-1]:
+                #print(i + "\t - \t" + j)
+                data[df[j].name] = treshold_by_peptides(df[j], df[i], treshold = treshold)
+    # rename index
+    if proteinID_index == True:
+        data = data.rename(index=dict(zip(list(range(len(data))), list(df["Protein IDs"]))))
+    return data
+
+
+
+
