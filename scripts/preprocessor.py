@@ -95,7 +95,7 @@ def log2FC_data(data):
     for i in range(0,len(data.columns),10):
         i = i
         data_subset = data[data.columns[i:i+10]]
-        log_data = data_subset.apply(np.log2)
+        log_data = data_subset.astype("float").apply(np.log2)
     
         new_df = pd.DataFrame()
         for j in range(len(log_data.columns)):
@@ -238,13 +238,36 @@ def split_data(data):
     
     return data_values, target_drugs, cell_lines, states, replicates
 
+def log2FC_data_peptide(data):
+    """
+    Converts full data to log2FC values. Use non-normalized values from peptide tryptic.csv
+    """
+    data = data[reporter_intensity_corrected]
+    log2FC_df = pd.DataFrame()
+    for i in range(0,len(data.columns),10):
+        i = i
+        data_subset = data[data.columns[i:i+10]]
+        log_data = data_subset.astype("float").apply(np.log2)
+    
+        new_df = pd.DataFrame()
+        for j in range(len(log_data.columns)):
+            tmp_col = log_data.iloc[:, j].name
+            tmp_df = log_data.iloc[:,0] - log_data.iloc[:,j]
+            new_df[tmp_col] = tmp_df
+            
+        log2FC_df = log2FC_df.append(new_df.T)
+    log2FC_df = log2FC_df.T
+    return log2FC_df
+
 def create_data_melted_peptide_tryptic_file():
     print("fill in")
     return
 
+
+
 protein_file = "proteinGroups tryptic.txt"
 peptide_file = "peptides tryptic.txt"
-
+data_file = peptide_file
 
 import time 
 
@@ -252,11 +275,17 @@ df_protein = pd.read_csv(protein_file, sep = "\t")
 df = pd.read_csv(peptide_file, sep = "\t")
 
 treshold = treshold
-df = pd.read_csv(data_file, sep = "\t")
+logFC = True
+df = pd.read_csv(data_file, sep = "\t") #peptide file
 
 
 reporter_intensity_corrected = add_prefix_with_treatments(prefix = "Reporter intensity corrected", treatments = 10)
 reporter_intensity_count = add_prefix_with_treatments(prefix = "Reporter intensity count", treatments = 10)
+
+if logFC == True:
+    not_reporter_intensity_corrected_cols = [c for c in df.columns if c not in reporter_intensity_corrected]
+    logFC_df = log2FC_data_peptide(df)
+    df = df[not_reporter_intensity_corrected_cols].join(logFC_df)
 
 cols = ["Leading_razor_protein", "Proteins", "Reporter_intensity_count",
         "Gene_names", "Charges", "Missed_Cleaveges", "PEP", "Score", 
@@ -289,13 +318,41 @@ for i in range(len(reporter_intensity_corrected)):
                score, cell_line, treatment, state, replicate, intensity]
         rows.append(row)
 t_proc_end = time.time()
+print("Loop done!")
 print(t_proc_end - t_proc_start)
+
+
+
+#######################################
+import pickle
+
+# obj0, obj1, obj2 are created here...
+
+# Saving the objects:
+with open('rows.pkl', 'w') as f:  # Python 3: open(..., 'wb')
+    pickle.dump(rows, f)
+
+# Getting back the objects:
+#with open('objs.pkl') as f:  # Python 3: open(..., 'rb')
+#    obj0, obj1, obj2 = pickle.load(f)
+       
+
+#########################################
 
 res = pd.DataFrame(rows, columns = ["Leading_razor_protein", "Proteins", "Reporter_intensity_count",
         "Gene_names", "Charges", "Missed_Cleaveges", "PEP", "Score", 
         "Cell_line", "Treatment", "State", "Replicate", "Reporter_intensity_corrected"])
+t_proc_end = time.time()
+print("Creating dataframe done!")
+print(t_proc_end - t_proc_start)
 
-res.to_csv("peptied_tryptic_proc_melted.csv", sep = "\t", index = False)
+#res.to_csv("peptied_tryptic_proc_melted.csv", sep = "\t", index = False)
+res.to_csv("peptide_tryptic_logFC2_melted.csv", sep = "\t", index = False)
+t_proc_end = time.time()
+print("Exported results to .csv done!")
+print(t_proc_end - t_proc_start)
+
+
 # peptide tresholding and q-value tresholding 
 # protein name
 
