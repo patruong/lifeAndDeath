@@ -27,22 +27,14 @@ def go_class(code):
         #data_.append(i.split())
     return go_vals
 
-a = go_class("A0A0D9SFH9")
+if __name__ == "__main::":
+    a = go_class("A0A0D9SFH9")
+    go_class("A0A075B6E5")
+    go_class("P13726")
+    go_class("P13726-2")
+    go_class("Q99986")
+    go_class("H0YJ50")
 
-go_class("A0A075B6E5")
-go_class("P13726")
-go_class("P13726-2")
-go_class("Q99986")
-go_class("H0YJ50")
-
-
-    
-
-df = pd.DataFrame(data)
-
-df_logFc.columns[10000] # from lifeAndDeath.py
-
-
-# How to go about the protein counting?
+    # How to go about the protein counting?
 
 
