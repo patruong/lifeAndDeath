@@ -1,7 +1,0 @@
-Perform pairsplot ICA
-
-Perform PC1 vs PC3 - draw lines
-Perform PC2 vs PC3 - draw lines
-
-Perform IC1 vs IC3 - draw lines
-Perform IC2 vs IC3 - draw lines

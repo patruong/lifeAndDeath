@@ -1,6 +1,0 @@
-Papers:
-
-Comparative Proteomics of Dying and Surviving Cancer Cells Improves the Identification of Drug Targets and Sheds Light on Cell Life/Death Decisions 
-
-
-ProTargetMiner as a proteome signature library of anticancer molecules for functional discovery
