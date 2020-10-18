@@ -1,0 +1,21 @@
+---
+title: "Life and Death"
+author: "ptruong"
+date: "October 19, 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 2020-10-18
+I've applied for resource allocation at Swedish NAtional Infrastucture for Computing (SNIC) and I'm waiting for the SNIC proposal to go through so I can get my gene-ontology (GO) protein classification for lifeAndDeath project in SNIC with multicore processing. Using my 8 local cores, It would theoretically take 10 days to get the GO protein classifications.
+
+Setting up a Rmarkdown log for this project. 
+
+
+
+
+
+
