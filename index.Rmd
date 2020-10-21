@@ -5,9 +5,122 @@ date: "October 19, 2020"
 output: html_document
 ---
 
+## About
+
+This is a project analyzing the proteome for living and dying cells with the goal to find differentiating factors between these states (living and dying) as well as finding proteome signatures for different apoptotic processes in cells. 
+
+The project is related to:
+
+[ProTargetMiner as a proteome signature library of anticancer molecules for functional discovery](https://www.nature.com/articles/s41467-019-13582-8)
+[Comparative Proteomics of Dying and Surviving Cancer Cells Improves the Identification of Drug Targets and Sheds Light on Cell Life / Death Decisions](https://pubmed.ncbi.nlm.nih.gov/29572246/)
+
+***
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(reticulate)
+library(DT)
+use_condaenv("py36")
 ```
+## 2020-10-21 Wednesday
+### 17:34 Some thoughts when processing proteins with my GO-id function.
+I am using the Leading_razor_protein as my search protein. The GO search goes bad when we have entries with the following formatting:
+
+P51608-2
+Q9Y5Q8-3
+CON__Q2KJC7
+A0A0C4DGS5
+CON__ENSEMBL:ENSBTAP00000007350
+D3DTX6
+
+But testing P51608-2 --> P51608 I find can get a GO-match. I guess this has to do with the suffix "-2"l. I also notice that often when P51608-2 is the Leading_razor_protein; the protein column also contains P51608, P51608-2; P51608-3, etc. I will investigate what the suffixes and errors are later.
+
+### 15:48 Data description
+Just finished coding a function to infer GO from protein names with uniprot, but there are some searching problems. But first lets describe the data.
+
+There are four files:
+
+- peptides tryptic.txt
+- peptides.txt
+- proteinGroups tryptic.txt
+- proteinGroups.txt
+
+There are two searches performed; one tryptic (I guess the tryptic files are the tryptic searches) and one semi-tryptic. I've been told this is performed because in cell death proteases get active and degrade some proteins. 
+
+The data code is:
+
+
+Reporter intensity corrected 0 A549_S_Rep1
+
+0 is the TMT tag code, it goes from 0-9 and covers a control (0) and the rest are 9 drugs in the following order: 
+
+Control
+8-zaguanine
+Raltitrexed
+Topotecan
+Floxuridine
+Nutlin
+Dasatinib
+Gefitinib
+Vincristine
+Bortezomib
+
+A549, RKO and MCF-7 are the cell lines. 
+
+S stands for "Surviving" meaning attached cells after treatment, and D stands for "Dying", those cells that detached from the plate after treatment with the anticancer drugs.
+Rep1-3 are the replicate numbers, all the experiments are in 3 replicates. 
+
+The surviving cell data comes from this paper ([ProTargetMiner as a proteome signature library of anticancer molecules for functional discovery](https://www.nature.com/articles/s41467-019-13582-8)). The dying cell data is new. 
+
+The head of the unprocessed data is shown in the table below:
+
+```{python py-setup, include=FALSE}
+import pandas as pd
+import numpy as np
+
+data_loc = "~/git/lifeAndDeath/data/knitr/"
+
+peptides = pd.read_csv(data_loc + "peptides_knitr.txt", sep = "\t")
+```
+
+```{r}
+datatable(reticulate::py$peptides)
+```
+
+This data is converted to seaborn-melted format, values have been log2FC-transformed where log2FC(A,B) is used, where the A is the untreated sample for each {cell_line}_{state}_{replicate} and the B is the treated for each {cell_line}_{state}_{replicate}. The data is tresholded with following parameters:
+
+- PEP < 0.01
+- Missed_cleaveges < 2
+- Reporter_intensity_count > 0
+- Reporter_intensity_corrected not in [-inf, inf],
+
+where I suspect -inf and inf is caused by log(0) values. 
+
+The function "log2FC_data_peptide" in /scripts/preprocessor.py (script needs cleanup) is used for log2FC. /scripts/preprocessor.py also has the seaborn-melted format converter code in it (but it is still not in a function).
+
+The converted data is shown below:
+
+```{python, include=FALSE}
+melted = pd.read_csv(data_loc + "melted_treshold_knitr.csv", sep = "\t")
+```
+
+```{r}
+datatable(reticulate::py$melted)
+```
+
+
+
+### 14:57 Protein Classification. 
+Checked out reactome, but honestly I have no idea how to use this. Webscraping their uniprot2reactome.txt urls will take too much time. What did my PI mean with looking at reactome for protein classification?
+
+I got some information from my collaborative partner, A, that I should check out StringDB, CytoScape and Corum for protein classification by thier functions. 
+
+Previous entry on curl on uniprot, was unnescessary, since the uniprot tab-seperated files could include GO in the columns.
+
+ToDo:
+- Check reactome more thoroughly,
+- Check StringDB, CytoScape and Corum
+
 ## 2020-10-20 Tuesday
 ### 12:02 - curl on Uniprot.
 
@@ -18,7 +131,7 @@ This means I will have to learn:
 - curl to get uniprot info.
 
 ## 2020-10-18
-I've applied for resource allocation at Swedish NAtional Infrastucture for Computing (SNIC) and I'm waiting for the SNIC proposal to go through so I can get my gene-ontology (GO) protein classification for lifeAndDeath project in SNIC with multicore processing. Using my 8 local cores, It would theoretically take 10 days to get the GO protein classifications.
+I've applied for resource allocation at Swedish National Infrastucture for Computing (SNIC) and I'm waiting for the SNIC proposal to go through so I can get my gene-ontology (GO) protein classification for lifeAndDeath project in SNIC with multicore processing. Using my 8 local cores, It would theoretically take 10 days to get the GO protein classifications.
 
 Setting up a Rmarkdown log for this project. 
 
