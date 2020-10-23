@@ -45,3 +45,49 @@ def get_GO_from_uniprot_protein(protein):
 res = get_GO_from_uniprot_protein(protein)
 
 df_col = df.Leading_razor_protein.apply(get_GO_from_uniprot_protein)
+
+def adj_protein(protein):
+    """
+    Function maps proteins by removing suffix and prefix.
+    
+    Example of mapping.
+    Q86U42 --> Q86U42
+    Q16891-2 --> Q16891
+    CON__P34955 --> P34955
+    """
+    split_1 = protein.split("-") # case with -
+    split_2 = protein.split("__") # case with __
+    if len(split_1) == 2: # case for protein with -
+        protein = split_1[0]
+        split_2 = protein.split("__")
+        if len(split_2) == 2:
+            protein = split_2[1]                
+    elif len(split_2) == 2:
+        protein = split_2[1]
+    return protein
+
+df["adj_protein"] = df.Leading_razor_protein.apply(adj_protein)
+
+df_col = df.adj_protein.apply(get_GO_from_uniprot_protein)
+
+adj_protein("CON__P01045-1")
+
+
+ Q9NYF9
+
+Type
+Interactor (Protein)
+Species
+Homo sapiens
+Synonyms
+GOGA2_HUMAN, Q6GRM9, Q9BRB0, Q9NYF9, A0A0C4DGS5
+
+
+
+
+
+
+
+
+
+
