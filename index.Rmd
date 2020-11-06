@@ -7,19 +7,18 @@ output: html_document
 
 ## About
 
-In lights of the success of the ProTargetMiner study (Saei et al. - ProTargetMiner as a proteome signature library of anticancer molecules for functional discovey) further data mining from the same data set, but extended with the proteome of dying cells will be conducted in this project. The overall goal of this project is to analyze the proteome for living and dying cells to understand cell death, specifically to find proteome signatures relating to cell death regardless of which treatment or cell line the cells belongs to, as well as be able to identify different apoptotic processes in cell. The dataset consist of living and dead cells of three cell lines (cancer cell lines; A549, RKO and MCF-7). The apoptotical process has been introduced by nine different cancer treatments (8-zaguanine, Raltitrexed, Topotecan, Floxuridine, Nutlin, Dasatinib, Gefitinib, Vincristine and Bortezomib), and there are three replicates, meaning that in total there are 60 different conditions in 3 replicates.  
+In lights of the success of the ProTargetMiner study (Saei et al. - ProTargetMiner as a proteome signature library of anticancer molecules for functional discovery) further data mining from the same data set, but extended with the proteome of dying cells will be conducted in this project. The overall goal of this project is to analyze the proteome for living and dying cells to understand cell death, specifically to find proteome signatures relating to cell death regardless of which treatment or cell line the cells belongs to, as well as be able to identify different apoptotic processes in the cell. The dataset consists of living and dead cells of three cell lines (cancer cell lines; A549, RKO and MCF-7). The apoptotic process has been introduced by nine different cancer treatments (8-zaguanine, Raltitrexed, Topotecan, Floxuridine, Nutlin, Dasatinib, Gefitinib, Vincristine and Bortezomib), and there are three replicates, meaning that in total there are 60 different conditions in 3 replicates.  
 
-For this project there are a couple of thing we would like to investigate:
+For this project there is a couple of things we would like to investigate:
 
-1) The number of apoptotic pathways. It has been suggested that there are at least two major signaling pathways trigger apoptotic cell death in [Geen et al.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4665079/), but we would like to investigate exactly how many there are. 
+1) The number of apoptotic pathways. It has been suggested that there are at least two major signalling pathways trigger apoptotic cell death in [Geen et al.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4665079/), but we would like to investigate exactly how many there are. 
 2) Proteome signature for surviving and dying cells regardless of treatment or cell line. To do this we would need to investigate target regulation in dying vs. surviving cells for each treatment and cell line as well.   
 
 ## Goals
 - Count amount of up- and downregulated proteins/peptides for life and death states.
-- Check if there are proteins which are always up- or down regulated for regardless of drug treatment. 
+- Check if there are proteins which are always up- or down-regulated for regardless of drug treatment. 
 - Check the correlations between protein abundances. 
 - Measure variance and co-variance of proteins. 
-
 
 
 
