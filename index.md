@@ -9,7 +9,18 @@
 # Blog
 
 ## 2021-03-03 Table of experiment
-
+| TMT tag | surviving_replicate1                       | surviving_replicate2                       | surviving_replicate3                       | dead_replicate1                            | dead_replicate2                            | dead_replicate3                            |
+|---------|--------------------------------------------|--------------------------------------------|--------------------------------------------|--------------------------------------------|--------------------------------------------|--------------------------------------------|
+| 126     | Control_1 (Attached cells)                 |  Control_2 (Attached cells)                | Control_3 (Attached cells)                 | Control_1 (Detached cells)                 | Control_2 (Detached cells)                 | Control_3 (Detached cells)                 |
+| 127N    | 8-azaguanine on Control_1 (Attached cells) | 8-azaguanine on Control_2 (Attached cells) | 8-azaguanine on Control_3 (Attached cells) | 8-azaguanine on Control_1 (Detached cells) | 8-azaguanine on Control_2 (Detached cells) | 8-azaguanine on Control_3 (Detached cells) |
+| 127C    | Raltitrexed on Control_1 (Attached cells)  | Raltitrexed on Control_2 (Attached cells)  | Raltitrexed on Control_3 (Attached cells)  | Raltitrexed on Control_1 (Detached cells)  | Raltitrexed on Control_2 (Detached cells)  | Raltitrexed on Control_3 (Detached cells)  |
+| 128N    | Topotecan on Control_1 (Attached cells)    | Topotecan on Control_2 (Attached cells)    | Topotecan on Control_3 (Attached cells)    | Topotecan on Control_1 (Detached cells)    | Topotecan on Control_2 (Detached cells)    | Topotecan on Control_3 (Detached cells)    |
+| 128C    | Floxuridine on Control_1 (Attached cells)  | Floxuridine on Control_2 (Attached cells)  | Floxuridine on Control_3 (Attached cells)  | Floxuridine on Control_1 (Detached cells)  | Floxuridine on Control_2 (Detached cells)  | Floxuridine on Control_3 (Detached cells)  |
+| 129N    | Nutlin on Control_1 (Attached cells)       | Nutlin on Control_2 (Attached cells)       | Nutlin on Control_3 (Attached cells)       | Nutlin on Control_1 (Detached cells)       | Nutlin on Control_2 (Detached cells)       | Nutlin on Control_3 (Detached cells)       |
+| 129C    | Dasatanib on Control_1 (Attached cells)    | Dasatanib on Control_2 (Attached cells)    | Dasatanib on Control_3 (Attached cells)    | Dasatanib on Control_1 (Detached cells)    | Dasatanib on Control_2 (Detached cells)    | Dasatanib on Control_3 (Detached cells)    |
+| 130N    | Gefitinib on Control_1 (Attached cells)    | Gefitinib on Control_2 (Attached cells)    | Gefitinib on Control_3 (Attached cells)    | Gefitinib on Control_1 (Detached cells)    | Gefitinib on Control_2 (Detached cells)    | Gefitinib on Control_3 (Detached cells)    |
+| 130C    | Vincristine on Control_1 (Attached cells)  | Vincristine on Control_2 (Attached cells)  | Vincristine on Control_3 (Attached cells)  | Vincristine on Control_1 (Detached cells)  | Vincristine on Control_2 (Detached cells)  | Vincristine on Control_3 (Detached cells)  |
+| 131     | Bortezomib on Control_1 (Attached cells)   | Bortezomib on Control_2 (Attached cells)   | Bortezomib on Control_3 (Attached cells)   | Bortezomib on Control_1 (Detached cells)   | Bortezomib on Control_2 (Detached cells)   | Bortezomib on Control_3 (Detached cells)   |
 
 | TMT tag | surviving_replicate1 | surviving_replicate2 | surviving_replicate3 | dead_replicate1 | dead_replicate2 | dead_replicate3 |
 |---------|----------------------|----------------------|----------------------|-----------------|-----------------|-----------------|
