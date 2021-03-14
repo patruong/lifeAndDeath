@@ -8,6 +8,11 @@
 
 # Blog
 
+## 2021-03-14 Understanding and wrangling the data.
+[MaxQuant - i.e. our file - format info]()
+
+
+
 ## 2021-03-03 Table of experiment
 Sent to confirm experiment with A.
 
