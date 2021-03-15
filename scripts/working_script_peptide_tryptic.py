@@ -76,16 +76,17 @@ d3 = preprocess_df(df, 3, "D")
 
 s1.merge
 
-data_frames = [s1, s2, s3, d1, d2, d3]
+data_frames = [df_base, s1, s2, s3, d1, d2, d3]
 df_merged = reduce(lambda  left,right: pd.merge(left,right,left_index=True, right_index=True,
                                             how='outer'), data_frames)
 # last step, check so that len(s1) is the same for all subsets after merging
 
 
-df = df[cols]
+df_tresholded = df_merged[df_merged["PEP"] < 0.01]
 
+# THIS IS GOOD and what we work with...
 
-
+############
 
 import numpy as np
 import skbio.stats.composition

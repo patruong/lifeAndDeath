@@ -25,6 +25,8 @@ len(df_merged) = 222935
 
 difference is 2781 peptides. Do these matter?
 
+When adding df_base (non reporter_intensity_corrected cols) to the merged. The rows are again 225715. I guess some of the row values are removed in the normalization and clr process? (Does it matter?)
+
 ## 2021-03-03 Table of experiment
 Sent to confirm experiment with Amirata.
 
