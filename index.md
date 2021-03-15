@@ -9,12 +9,16 @@
 # Blog
 
 ## 2021-03-14 Understanding and wrangling the data.
-[MaxQuant - i.e. our file - format info]()
+[MaxQuant - i.e. our file - format info](http://proteomics.fiocruz.br/software/sim/supplementaryfiles/AndromedaResultsPFU/tables.pdf)
 
+score - Andromeda score - how should we use this ?
 
+Problems arising...
+
+- the seperated state has all zero-rows. (probabily, because there is some peptide that is found in either dead or suriving state that is not prevalent in the other.)
 
 ## 2021-03-03 Table of experiment
-Sent to confirm experiment with A.
+Sent to confirm experiment with Amirata.
 
 | TMT tag | surviving_replicate1                       | surviving_replicate2                       | surviving_replicate3                       | dead_replicate1                            | dead_replicate2                            | dead_replicate3                            |
 |---------|--------------------------------------------|--------------------------------------------|--------------------------------------------|--------------------------------------------|--------------------------------------------|--------------------------------------------|
