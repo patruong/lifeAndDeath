@@ -17,6 +17,14 @@ Problems arising...
 
 - the seperated state has all zero-rows. (probabily, because there is some peptide that is found in either dead or suriving state that is not prevalent in the other.)
 
+When merging some peptide are lost... why?
+
+len(df) = 225715
+len(df_z) = 225715
+len(df_merged) = 222935
+
+difference is 2781 peptides. Do these matter?
+
 ## 2021-03-03 Table of experiment
 Sent to confirm experiment with Amirata.
 
