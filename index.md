@@ -8,6 +8,12 @@
 
 # Blog
 
+## 2021-03-17 Script for protein analysis
+
+Made script for batching up the proteinGroup file.
+
+Made functions for tresholding for peptide count and sequence coverage.
+
 ## 2021-03-15 Batch-effects.
 
 plotted stacked histogrames of the df subsets to see if there was batch effects. It does not seem to be so...

@@ -75,8 +75,9 @@ df_t = np.log2(df_t)
 
 df_subset = df_t[select_rep_state_cell_line_intensities(1, "D", "RKO")]
 
-control = df_subset[df_subset.columns[0]]
-df_subset - control
+control = pd.DataFrame(df_subset[df_subset.columns[0]])
+
+df_fc = df_subset - control
 
 
 
