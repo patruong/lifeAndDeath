@@ -245,3 +245,10 @@ def get_all_reporter_intensity_correct():
  'Reporter intensity corrected 9 RKO_S_Rep3']
     return cols
 
+def get_reporter_intensity_without_control():
+    cols = get_all_reporter_intensity_correct()
+    cols_without_control = []
+    for i in cols:
+        if i.split(" ")[3] != "0":
+            cols_without_control.append(i)
+    return cols_without_control

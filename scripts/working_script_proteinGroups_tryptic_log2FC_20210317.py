@@ -9,7 +9,7 @@ Created on Wed Mar 17 15:16:03 2021
 import pandas as pd
 import numpy as np
 
-from get_columns import get_cell_line_state_replicate, get_base_cols_proteinGroups, get_all_peptide_counts, get_razor_and_unique_peptide_counts, get_unique_peptides, get_sequence_coverage, get_all_reporter_intensity_correct
+from get_columns import get_cell_line_state_replicate, get_base_cols_proteinGroups, get_all_peptide_counts, get_razor_and_unique_peptide_counts, get_unique_peptides, get_sequence_coverage, get_all_reporter_intensity_correct, get_reporter_intensity_without_control()
 
 df = pd.read_csv("proteinGroups tryptic.csv", sep = "\t")
 
@@ -65,25 +65,52 @@ def apply_treshold(df_subset, peptide_count_treshold = 1, sequence_coverage_perc
     df_subset = apply_sequence_coverage_treshold(df_subset, sequence_coverage_percentage_treshold)
     return df_subset
 
+def subtract_df_with_col(df, col):
+    """
+    test to see results:
+    a = pd.DataFrame(np.array([[1,1,1],[2,4,8],[3,6,9]]).T, columns = ["a", "b", "c"])
+    (a.T - a.a).T
+    subtract_df_with_col(a, "a")
+    """
+    return (df.T - df[col]).T
+
+def compute_control_to_treated_fc(df_subset):
+    control_col = df_subset.columns[0]
+    fc = subtract_df_with_col(df_subset, control_col)
+    return fc
+
+
+def get_df_with_control_vs_treated_fc(df_t):
+    """
+    df_t is tresholded and logged df with all reporter_intensity_corrected_cols
+    """
+    df_fc = pd.DataFrame()
+    for cell_line in cell_lines:
+        for state in states:
+            for replicate in replicates:
+                df_subset = df_t[select_rep_state_cell_line_intensities(replicate, state, cell_line)]            
+                fc = compute_control_to_treated_fc(df_subset)
+                if df_fc.empty:
+                    df_fc = df_fc.append(fc)
+                else:
+                    df_fc = df_fc.join(fc)
+    return df_fc
+
 
 peptide_count_treshold = 1
 sequence_coverage_percentage_treshold = 0
+
 df_t = apply_treshold(df[reporter_intensity_corrected_cols], peptide_count_treshold, sequence_coverage_percentage_treshold)
 df_t = df_t.replace({0:np.nan})
 df_t = np.log2(df_t)
+df_fc = get_df_with_control_vs_treated_fc(df_t)
+df_res = df_base.join(df_fc)
 
+# Q-value treshold
+df_res = df_res[df_res["Q-value"] < 0.05] # We needed to do this step to treshold for q-values. perhaps could have done earlier?
 
-df_subset = df_t[select_rep_state_cell_line_intensities(1, "D", "RKO")]
-
-control = pd.DataFrame(df_subset[df_subset.columns[0]])
-
-df_fc = df_subset - control
-
-
-
-
-
-
+# This is the data matrix we work with.
+df_int = df_res[get_reporter_intensity_without_control()]
 
 
 
