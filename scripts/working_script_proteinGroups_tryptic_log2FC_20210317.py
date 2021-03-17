@@ -9,9 +9,11 @@ Created on Wed Mar 17 15:16:03 2021
 import pandas as pd
 import numpy as np
 
-from get_columns import get_base_cols_proteinGroups, get_all_peptide_counts, get_razor_and_unique_peptide_counts, get_unique_peptides, get_sequence_coverage, get_all_reporter_intensity_correct
+from get_columns import get_cell_line_state_replicate, get_base_cols_proteinGroups, get_all_peptide_counts, get_razor_and_unique_peptide_counts, get_unique_peptides, get_sequence_coverage, get_all_reporter_intensity_correct
 
 df = pd.read_csv("proteinGroups tryptic.csv", sep = "\t")
+
+cell_lines, states, replicates = get_cell_line_state_replicate()
 
 base_cols = get_base_cols_proteinGroups()
 peptide_count_cols = get_all_peptide_counts()
@@ -28,6 +30,14 @@ def select_rep_state_intensities(rep, state):
                 intensity_list.append(i)
     return intensity_list
 
+def select_rep_state_cell_line_intensities(rep, state, cell_line):
+    intensity_list = []
+    for i in reporter_intensity_corrected_cols:
+        if i.split(" ")[4].split("_")[2] == ("Rep" + str(rep)):
+            if i.split(" ")[4].split("_")[1] == state:
+                if i.split(" ")[4].split("_")[0] == cell_line:
+                    intensity_list.append(i)
+    return intensity_list
 
 df_base = df[get_base_cols_proteinGroups()]
 df_peptide_count = df[peptide_count_cols]
@@ -58,11 +68,21 @@ def apply_treshold(df_subset, peptide_count_treshold = 1, sequence_coverage_perc
 
 peptide_count_treshold = 1
 sequence_coverage_percentage_treshold = 0
+df_t = apply_treshold(df[reporter_intensity_corrected_cols], peptide_count_treshold, sequence_coverage_percentage_treshold)
+df_t = df_t.replace({0:np.nan})
+df_t = np.log2(df_t)
 
-s1 = apply_treshold(df[select_rep_state_intensities(1, "S")], peptide_count_treshold, sequence_coverage_percentage_treshold)
-s2 = apply_treshold(df[select_rep_state_intensities(2, "S")], peptide_count_treshold, sequence_coverage_percentage_treshold)
-s3 = apply_treshold(df[select_rep_state_intensities(3, "S")], peptide_count_treshold, sequence_coverage_percentage_treshold)
-d1 = apply_treshold(df[select_rep_state_intensities(1, "D")], peptide_count_treshold, sequence_coverage_percentage_treshold)
-d2 = apply_treshold(df[select_rep_state_intensities(2, "D")], peptide_count_treshold, sequence_coverage_percentage_treshold)
-d3 = apply_treshold(df[select_rep_state_intensities(3, "D")], peptide_count_treshold, sequence_coverage_percentage_treshold)
+
+df_subset = df_t[select_rep_state_cell_line_intensities(1, "D", "RKO")]
+
+control = df_subset[df_subset.columns[0]]
+df_subset - control
+
+
+
+
+
+
+
+
 

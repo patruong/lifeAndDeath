@@ -6,6 +6,12 @@ Created on Wed Mar 17 16:39:01 2021
 @author: ptruong
 """
 
+def get_cell_line_state_replicate():
+    cell_lines = ["A549", "MCF7", "RKO"]
+    states = ["S", "D"]
+    replicates = [1,2,3]
+    return cell_lines, states, replicates
+
 def get_base_cols_peptide():
     cols = ["Sequence", "Missed cleavages", "Proteins", "Leading razor protein",
        "Unique (Groups)", "Unique (Proteins)", "PEP", "Score"] 
