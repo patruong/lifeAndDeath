@@ -8,6 +8,12 @@
 
 # Blog
 
+## 2021-03-15 Batch-effects.
+
+plotted stacked histogrames of the df subsets to see if there was batch effects. It does not seem to be so...
+
+Lukas seem to see that there are signifikant batch effect.
+
 ## 2021-03-14 Understanding and wrangling the data.
 [MaxQuant - i.e. our file - format info](http://proteomics.fiocruz.br/software/sim/supplementaryfiles/AndromedaResultsPFU/tables.pdf)
 
