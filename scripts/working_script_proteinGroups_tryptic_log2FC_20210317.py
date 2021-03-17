@@ -9,7 +9,8 @@ Created on Wed Mar 17 15:16:03 2021
 import pandas as pd
 import numpy as np
 
-from get_columns import get_cell_line_state_replicate, get_base_cols_proteinGroups, get_all_peptide_counts, get_razor_and_unique_peptide_counts, get_unique_peptides, get_sequence_coverage, get_all_reporter_intensity_correct, get_reporter_intensity_without_control()
+from get_columns import get_cell_line_state_replicate, get_base_cols_proteinGroups, get_all_peptide_counts, get_razor_and_unique_peptide_counts, get_unique_peptides, get_sequence_coverage, get_all_reporter_intensity_correct, get_reporter_intensity_without_control
+from column_mapper import col_to_treatment_mapper, treatment_nomenclature_map_dict, col_to_cell_line_mapper, col_to_state_mapper, col_to_rep_mapper
 
 df = pd.read_csv("proteinGroups tryptic.csv", sep = "\t")
 
@@ -111,6 +112,63 @@ df_res = df_res[df_res["Q-value"] < 0.05] # We needed to do this step to treshol
 
 # This is the data matrix we work with.
 df_int = df_res[get_reporter_intensity_without_control()]
+df_int = df_int.T
+df_int_proteins = df_int.columns
 
+# Map columns so we can plot 
+df_int["treatment_num"] = df_int.index.map(col_to_treatment_mapper)
+df_int["treatment_name"] = df_int.treatment_num.map(treatment_nomenclature_map_dict)
+df_int["cell_line"] = df_int.index.map(col_to_cell_line_mapper)
+df_int["state"] = df_int.index.map(col_to_state_mapper)
+df_int["rep"] = df_int.index.map(col_to_rep_mapper)
 
+#######
+# PCA #
+#######
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+from sklearn.impute import SimpleImputer
+import matplotlib.pyplot as plt
 
+# splice df_int for pca now
+df_pca = df_int[df_int.cell_line == "MCF7"]
+
+features = df_int_proteins
+
+# Separating out the features
+x = df_pca.loc[:, features].values
+
+# Separating out the target
+classification = "state" # Choose target - treatment, cell_line, state here
+y = df_pca.loc[:,[classification]].values
+
+# Standardizing the features
+x = StandardScaler().fit_transform(x)
+
+# Missing value impuration
+imputer = SimpleImputer(missing_values=np.nan, strategy="constant", fill_value = 0)
+x = imputer.fit_transform(x)
+
+# pca
+pca = PCA(n_components=2)
+principalComponents = pca.fit_transform(x)
+principalDf = pd.DataFrame(data = principalComponents
+             , columns = ['principal component 1', 'principal component 2'])
+finalDf = pd.concat([principalDf, df_pca[[classification]].reset_index()[classification]], axis = 1)
+
+#Visualization
+fig = plt.figure(figsize = (8,8))
+ax = fig.add_subplot(1,1,1) 
+ax.set_xlabel('Principal Component 1', fontsize = 15)
+ax.set_ylabel('Principal Component 2', fontsize = 15)
+ax.set_title('2 component PCA', fontsize = 20)
+targets = finalDf[classification].unique()
+colors = ['r', 'g', 'b']
+for target, color in zip(targets,colors):
+    indicesToKeep = finalDf[classification] == target
+    ax.scatter(finalDf.loc[indicesToKeep, 'principal component 1']
+               , finalDf.loc[indicesToKeep, 'principal component 2']
+               , c = color
+               , s = 50)
+ax.legend(targets)
+ax.grid()
