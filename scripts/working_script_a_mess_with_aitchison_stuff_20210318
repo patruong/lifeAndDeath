@@ -1,0 +1,89 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Mar 18 01:24:16 2021
+
+@author: ptruong
+"""
+
+import pandas as pd
+import numpy as np
+from skbio.stats.composition import multiplicative_replacement
+X = np.array([[.2,.4,.4, 0],[0,.5,.5,0]])
+multiplicative_replacement(X)
+
+d = pd.DataFrame(X)
+
+multiplicative_replacement(d)
+
+
+from skbio.stats.composition import closure
+from skbio.stats.composition import multiplicative_replacement
+from skbio.stats.composition import clr
+
+def drop_zero_rows(df):
+    df = df[(df.T != 0).any()]
+    return df
+
+def apply_aitchison(df_subset):
+    df_subset = df_subset.fillna(0)
+    cols = df_subset.columns
+    df_subset = drop_zero_rows(df_subset)
+    index = df_subset.index
+    df_subset = multiplicative_replacement(df_subset)
+    df_subset = clr(df_subset)
+    df_subset = pd.DataFrame(df_subset, index = index, columns=cols)
+    return df_subset
+
+
+def aitchison_transform_df(df_t):
+    """
+    df_t is tresholded and logged df with all reporter_intensity_corrected_cols
+    """
+    df_fc = pd.DataFrame()
+    for cell_line in cell_lines:
+        for state in states:
+            for replicate in replicates:
+                df_subset = df_t[select_rep_state_cell_line_intensities(replicate, state, cell_line)]            
+                df_subset = apply_aitchison(df_subset)
+                if df_fc.empty:
+                    df_fc = df_fc.append(df_subset)
+                else:
+                    df_fc = pd.concat([df_fc, df_subset], axis = 1)
+    return df_fc
+
+df_subset = preprocess_df(df_subset, 1, "D", "RKO")
+
+
+
+def get_df_with_control_vs_treated_fc(df_t):
+    """
+    df_t is tresholded and logged df with all reporter_intensity_corrected_cols
+    """
+    df_fc = pd.DataFrame()
+    for cell_line in cell_lines:
+        for state in states:
+            for replicate in replicates:
+                df_subset = df_t[select_rep_state_cell_line_intensities(replicate, state, cell_line)]            
+                df_subset = apply_aitchison(df_subset)
+                if df_fc.empty:
+                    df_fc = df_fc.append(df_subset)
+                else:
+                    df_fc = pd.concat([df_fc, df_subset], axis = 1)
+    return df_fc
+
+df_test = get_df_with_control_vs_treated_fc(df_t)
+
+df_subset2 = df_t[select_rep_state_cell_line_intensities(1, "D", "RKO")] 
+df_subset2 = apply_aitchison(df_subset2)
+
+pd.concat([df_subset, df_subset2], axis = 1)
+
+df1 = pd.DataFrame({"A": ["A0", "A1", "A2", "A3"],"B": ["B0", "B1", "B2", "B3"],"C": ["C0", "C1", "C2", "C3"],"D": ["D0", "D1", "D2", "D3"],},index=[0, 1, 2, 3],) 
+       
+df4 = pd.DataFrame({"B": ["B2", "B3", "B6", "B7"],"D": ["D2", "D3", "D6", "D7"],"F": ["F2", "F3", "F6", "F7"],},index=[2, 3, 6, 7],)
+
+
+result = pd.concat([df1, df4], axis=1)
+
+

@@ -130,45 +130,93 @@ from sklearn.decomposition import PCA
 from sklearn.impute import SimpleImputer
 import matplotlib.pyplot as plt
 
-# splice df_int for pca now
-df_pca = df_int[df_int.cell_line == "MCF7"]
+def pca_on_cell_line(df_int, cell_line):
+    # splice df_int for pca now
+    df_pca = df_int[df_int.cell_line == cell_line]
+    
+    features = df_int_proteins
+    
+    # Separating out the features
+    x = df_pca.loc[:, features].values
+    
+    # Separating out the target
+    classification = "state" # Choose target - treatment, cell_line, state here
+    y = df_pca.loc[:,[classification]].values
+    
+    # Standardizing the features
+    x = StandardScaler().fit_transform(x)
+    
+    # Missing value impuration
+    imputer = SimpleImputer(missing_values=np.nan, strategy="constant", fill_value = 0)
+    x = imputer.fit_transform(x)
+    
+    # pca
+    pca = PCA(n_components=2)
+    principalComponents = pca.fit_transform(x)
+    principalDf = pd.DataFrame(data = principalComponents
+                 , columns = ['principal component 1', 'principal component 2'])
+    finalDf = pd.concat([principalDf, df_pca[[classification]].reset_index()[classification]], axis = 1)
+    
+    #Visualization
+    fig = plt.figure(figsize = (8,8))
+    ax = fig.add_subplot(1,1,1) 
+    ax.set_xlabel('Principal Component 1', fontsize = 15)
+    ax.set_ylabel('Principal Component 2', fontsize = 15)
+    ax.set_title('2 component PCA', fontsize = 20)
+    targets = finalDf[classification].unique()
+    colors = ['r', 'g', 'b']
+    for target, color in zip(targets,colors):
+        indicesToKeep = finalDf[classification] == target
+        ax.scatter(finalDf.loc[indicesToKeep, 'principal component 1']
+                   , finalDf.loc[indicesToKeep, 'principal component 2']
+                   , c = color
+                   , s = 50)
+    ax.legend(targets)
+    ax.set_title(cell_line)
+    ax.grid()
+    
 
-features = df_int_proteins
-
-# Separating out the features
-x = df_pca.loc[:, features].values
-
-# Separating out the target
-classification = "state" # Choose target - treatment, cell_line, state here
-y = df_pca.loc[:,[classification]].values
-
-# Standardizing the features
-x = StandardScaler().fit_transform(x)
-
-# Missing value impuration
-imputer = SimpleImputer(missing_values=np.nan, strategy="constant", fill_value = 0)
-x = imputer.fit_transform(x)
-
-# pca
-pca = PCA(n_components=2)
-principalComponents = pca.fit_transform(x)
-principalDf = pd.DataFrame(data = principalComponents
-             , columns = ['principal component 1', 'principal component 2'])
-finalDf = pd.concat([principalDf, df_pca[[classification]].reset_index()[classification]], axis = 1)
-
-#Visualization
-fig = plt.figure(figsize = (8,8))
-ax = fig.add_subplot(1,1,1) 
-ax.set_xlabel('Principal Component 1', fontsize = 15)
-ax.set_ylabel('Principal Component 2', fontsize = 15)
-ax.set_title('2 component PCA', fontsize = 20)
-targets = finalDf[classification].unique()
-colors = ['r', 'g', 'b']
-for target, color in zip(targets,colors):
-    indicesToKeep = finalDf[classification] == target
-    ax.scatter(finalDf.loc[indicesToKeep, 'principal component 1']
-               , finalDf.loc[indicesToKeep, 'principal component 2']
-               , c = color
-               , s = 50)
-ax.legend(targets)
-ax.grid()
+def pca_on_cell_line(df_int, state):
+    # splice df_int for pca now
+    df_pca = df_int[df_int.state == state]
+    
+    features = df_int_proteins
+    
+    # Separating out the features
+    x = df_pca.loc[:, features].values
+    
+    # Separating out the target
+    classification = "cell_line" # Choose target - treatment, cell_line, state here
+    y = df_pca.loc[:,[classification]].values
+    
+    # Standardizing the features
+    x = StandardScaler().fit_transform(x)
+    
+    # Missing value impuration
+    imputer = SimpleImputer(missing_values=np.nan, strategy="constant", fill_value = 0)
+    x = imputer.fit_transform(x)
+    
+    # pca
+    pca = PCA(n_components=2)
+    principalComponents = pca.fit_transform(x)
+    principalDf = pd.DataFrame(data = principalComponents
+                 , columns = ['principal component 1', 'principal component 2'])
+    finalDf = pd.concat([principalDf, df_pca[[classification]].reset_index()[classification]], axis = 1)
+    
+    #Visualization
+    fig = plt.figure(figsize = (8,8))
+    ax = fig.add_subplot(1,1,1) 
+    ax.set_xlabel('Principal Component 1', fontsize = 15)
+    ax.set_ylabel('Principal Component 2', fontsize = 15)
+    ax.set_title('2 component PCA', fontsize = 20)
+    targets = finalDf[classification].unique()
+    colors = ['r', 'g', 'b']
+    for target, color in zip(targets,colors):
+        indicesToKeep = finalDf[classification] == target
+        ax.scatter(finalDf.loc[indicesToKeep, 'principal component 1']
+                   , finalDf.loc[indicesToKeep, 'principal component 2']
+                   , c = color
+                   , s = 50)
+    ax.legend(targets)
+    ax.grid()
+    
