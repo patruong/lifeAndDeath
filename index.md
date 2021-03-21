@@ -8,6 +8,24 @@
 
 # Blog
 
+## 2021-03-18-21 Analysis scripts made for proteinGroup tryptic.
+
+jupyter notebook for analysis of proteinGroup.csv is created.
+
+Analysis performed:
+- PCA on data seperated on cell lines, states and cell lines & states.
+- Batch effect investigation using intensity histograms of data seperated on cell lines & states.
+
+Tested modules for wPCA.
+- statsmodels can weight PCA but requires fillna before with ruins the purpose.
+- wpca module for python is insanely slow.
+
+I guess weighted PCA with 0 for nan and 1 for non-nan should be same as fillna(0), so I used fillna(0). fillna(0) compares to non fillna(0) make the PCA plot groups "tighter".
+ToDo:
+- Perform same analysis on peptide data.
+- Perform Aitchison transformation and log2FC transformation the "correct" way on this data (before I performed it on bunched together cell lines).
+
+
 ## 2021-03-17 Script for protein analysis
 
 Made script for batching up the proteinGroup file.
