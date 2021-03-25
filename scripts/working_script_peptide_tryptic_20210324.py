@@ -128,6 +128,26 @@ df_int = np.log2(df_int)
 #df_int = multiplicative_replacement(df_int)
 #df_int = pd.DataFrame(df_int, columns = midx)
 
+#######################
+# BATCH NORMALIZATION #
+# Multiplication is not the same in log-space so we need to normalize before any transformation....
+#######################
+
+df_int.sum() #check intensity sum of each channel
+
+target = df_int.sum().mean()
+norm_fac = target/df_int.sum()
+df_norm = df_int*norm_fac
+
+df_norm.sum() #check again intensity sum of each channel.
+
+df_norm = df_norm.replace(0, np.nan)
+df_norm = np.log2(df_norm)
+
+
+#import statsmodels.robust.norms.TrimmedMean
+import rpy2
+
 
 ########
 # PLOT #
@@ -159,6 +179,7 @@ def plot_intensity_histogram(df_int, min_x = 0, max_x = 30, step = 0.1):
     plt.legend()
 
 plot_intensity_histogram(df_int, min_x = 0, max_x = 25, step = 0.1)
+plot_intensity_histogram(df_norm, min_x = 0, max_x = 25, step = 0.1)
 
 def plot_intensity_boxplot(df_int):
     """
@@ -194,12 +215,4 @@ def plot_intensity_boxplot(df_int):
 
 plot_intensity_boxplot(df_int)
 
-plt.boxplot(df_cell_state.iloc[:,i].dropna(), positions = [1], patch_artist=True, 
-            notch=True, medianprops=dict(color="grey"),
-            boxprops=dict(facecolor = "red"))
-
-
-plt.hist(df_int.iloc[:,1] , bins=np.arange(min_x,max_x, step), 
-         histtype="step", color = colors[col_i], alpha = 0.4)
-plt.boxplot(df_int.iloc[:,1].dropna(), positions = [0], patch_artist=True, notch=True, medianprops=dict(color="grey"),boxprops=dict(facecolor = "red"))
-
+plot_intensity_boxplot(df_norm)
