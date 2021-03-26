@@ -141,19 +141,55 @@ df_norm = df_int*norm_fac
 
 df_norm.sum() #check again intensity sum of each channel.
 
-df_norm = df_norm.replace(0, np.nan)
-df_norm = np.log2(df_norm)
+df_norm_log2 = df_norm.replace(0, np.nan)
+df_norm_log2 = np.log2(df_norm_log2)
 
 
 #import statsmodels.robust.norms.TrimmedMean
-import rpy2
+import pandas as pd
+import rpy2.robjects as ro
+from rpy2.robjects.packages import importr
+from rpy2.robjects import pandas2ri
+from rpy2.robjects.conversion import localconverter
 
+def calcNormFactors(df):
+    with localconverter(ro.default_converter + pandas2ri.converter):
+      r_from_pd_df = ro.conversion.py2rpy(df)
+    
+    edgeR = importr("edgeR")
+    raw_tmm = edgeR.calcNormFactors(r_from_pd_df)
+    
+    with localconverter(ro.default_converter + pandas2ri.converter):
+      pd_from_r_df = ro.conversion.rpy2py(raw_tmm)
+      
+    raw_tmm_pd = pd.DataFrame(pd_from_r_df, index =midx).T.values
+    return raw_tmm_pd
 
+sl_tmm = calcNormFactors(df_norm)
+
+df_tmm = df_norm/sl_tmm
+df_tmm = df_tmm.replace(0, np.nan)
+df_tmm = np.log2(df_tmm)
+
+# IRS
+
+df_geoMean  = np.exp(np.log(df_norm.replace(0,np.nan)).mean(axis=1))
+irs_fac = df_geoMean / df_norm.sum(axis=1) 
+df_irs =(df_norm.T*irs_fac).T
+
+irs_tmm = calcNormFactors(df_irs)
+df_irs_tmm = df_irs/irs_tmm
+
+a = pd.DataFrame([[2,3,4]]).T
+b = pd.DataFrame([[1,2,3]]).T
+
+a = pd.DataFrame([[1,2,3],[2,3,4],[5,6,7]])
+b = pd.DataFrame([[1,2,3]]).values
 ########
 # PLOT #
 ########
 
-def plot_intensity_histogram(df_int, min_x = 0, max_x = 30, step = 0.1):
+def plot_intensity_histogram(df_int, min_x = 0, max_x = 30, step = 0.1, title = "title"):
     """
     df_int with midx
     
@@ -176,12 +212,16 @@ def plot_intensity_histogram(df_int, min_x = 0, max_x = 30, step = 0.1):
                     plt.hist(df_cell_state.iloc[:,i] , bins=np.arange(min_x,max_x, step), 
                              histtype="step", color = colors[col_i], alpha = 0.4)
             col_i+=1
+    plt.title(title)
     plt.legend()
 
-plot_intensity_histogram(df_int, min_x = 0, max_x = 25, step = 0.1)
-plot_intensity_histogram(df_norm, min_x = 0, max_x = 25, step = 0.1)
+plot_intensity_histogram(np.log2(df_int.replace(0,np.nan)), min_x = 0, max_x = 25, step = 0.1, title = "raw")
+plot_intensity_histogram(np.log2(df_norm.replace(0,np.nan)), min_x = 0, max_x = 25, step = 0.1, title = "Batch normalization - equal signal per channel")
+plot_intensity_histogram(df_tmm, min_x = 0, max_x = 25, step = 0.1, title = "TMM")
+plot_intensity_histogram(np.log2(df_irs.replace(0,np.nan)), min_x = 0, max_x = 25, step = 0.1, title = "IRS")
+plot_intensity_histogram(np.log2(df_irs_tmm.replace(0,np.nan)), min_x = 0, max_x = 25, step = 0.1, title = "IRS-TMM")
 
-def plot_intensity_boxplot(df_int):
+def plot_intensity_boxplot(df_int, title = "title"):
     """
     Boxplot details.
     # https://stackoverflow.com/questions/41997493/python-matplotlib-boxplot-color
@@ -211,8 +251,12 @@ def plot_intensity_boxplot(df_int):
                                 boxprops=dict(facecolor = colors[col_i]))
                 pos_i+=1
             col_i+=1
+    plt.title(title)
     plt.legend()
 
-plot_intensity_boxplot(df_int)
+plot_intensity_boxplot(np.log2(df_int.replace(0,np.nan)), title = "raw")
+plot_intensity_boxplot(np.log2(df_norm.replace(0,np.nan)), title = "Batch normalization - equal signal per channel")
+plot_intensity_boxplot(df_tmm, title = "TMM")
+plot_intensity_boxplot(np.log2(df_irs.replace(0,np.nan)), title = "IRS")
+plot_intensity_boxplot(np.log2(df_irs_tmm.replace(0,np.nan)), title = "IRS-TMM")
 
-plot_intensity_boxplot(df_norm)

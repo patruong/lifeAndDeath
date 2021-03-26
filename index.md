@@ -8,6 +8,12 @@
 
 # Blog
 
+## 2021-03-21-25 Data formatting and batch normalization.
+
+Performed this https://pwilmart.github.io/IRS_normalization/understanding_IRS.html and plotted.
+
+
+
 ## 2021-03-18-21 Analysis scripts made for proteinGroup tryptic.
 
 jupyter notebook for analysis of proteinGroup.csv is created.
