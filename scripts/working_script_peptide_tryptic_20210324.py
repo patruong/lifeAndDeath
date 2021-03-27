@@ -28,9 +28,20 @@ os.chdir("/home/ptruong/git/lifeAndDeath/data/amirata")
 df_raw = pd.read_csv("peptides tryptic.csv", sep = "\t")
 
 
-cell_lines, states, replicates = get_cell_line_state_replicate()
+#cell_lines, states, replicates = get_cell_line_state_replicate()
 base_cols = get_base_cols_peptide()
 reporter_intensity_corrected_cols = get_all_reporter_intensity_correct()
+
+cell_lines, states, replicates = [], [], []
+for x in reporter_intensity_corrected_cols:
+    cell_line = x.split(" ")[-1].split("_")[0]
+    state = x.split(" ")[-1].split("_")[1]
+    replicate = x.split(" ")[-1].split("_")[2]
+    cell_lines.append(cell_line), states.append(state), replicates.append(replicate)
+cell_lines = list(dict.fromkeys(cell_lines).keys())
+states = list(dict.fromkeys(states).keys())
+replicates = list(dict.fromkeys(replicates).keys())
+
 df_base = df_raw[get_base_cols_peptide()]
 
 
@@ -173,8 +184,34 @@ df_tmm = np.log2(df_tmm)
 
 # IRS
 
+
+#irs = df_norm.sum(axis=1)
+
+#irs_avg = np.exp(np.mean(np.log(irs)))
+
+
+experiments = {}
+for cell_line in cell_lines:
+    for state in states:
+        for replicate in replicates:
+            experiments[cell_line + "_" + state + "_Rep" + str(replicate)] = df_norm.iloc[:, df_norm.columns.get_level_values(3) == "Rep"+str(replicate)][cell_line][state]
+df_norm.iloc[:, df_norm.columns.get_level_values(3) == "Rep"+str(replicate)]
+["A549"]
+rowSums = {}
+for experiment in experiments:
+    rowSums[experiment] = experiments[experiment].sum(axis=1)
+
+irs = pd.DataFrame.from_dict(rowSums)
+
+irs_avg = np.exp(np.mean(np.log(irs.replace(0,np.nan)))) #Try np.replace with 0.000001 and np.nan
+irs_fac = irs_avg/irs # a = pd.DataFrame([[1,2,3],[2,3,4],[5,6,7]]), b = pd.Series([1,2,3]), b/a OK!
+
+
+for experiment in experiments:
+    (irs_fac["A549_S_Rep1"]*experiments["A549_S_Rep1"].T).T
+
 df_geoMean  = np.exp(np.log(df_norm.replace(0,np.nan)).mean(axis=1))
-irs_fac = df_geoMean / df_norm.sum(axis=1) 
+irs_fac = df_geoMean / df_norm.sum(axis=1) htop
 df_irs =(df_norm.T*irs_fac).T
 
 irs_tmm = calcNormFactors(df_irs)
@@ -185,6 +222,11 @@ b = pd.DataFrame([[1,2,3]]).T
 
 a = pd.DataFrame([[1,2,3],[2,3,4],[5,6,7]])
 b = pd.DataFrame([[1,2,3]]).values
+b = pd.DataFrame([[1,2,3]]).T
+b = pd.Series([1,2,3])
+
+
+
 ########
 # PLOT #
 ########
