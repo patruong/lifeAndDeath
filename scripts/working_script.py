@@ -41,6 +41,11 @@ for i in protein.columns[0:50]:
 df = pd.read_csv("peptide_tryptic_melted.csv", sep = "\t")
 
 
+####
+
+protein.columns
+protein["Peptide counts (all)"]
+
 
 
 

@@ -8,6 +8,11 @@
 
 # Blog
 
+## 2021-03-28 IRS code
+The exact IRS code with normalizing for each batch does not work. Myu old code using geometric average for all batches works better...
+
+I will try comBat tomorrow.
+
 ## 2021-03-21-25 Data formatting and batch normalization.
 
 Performed this https://pwilmart.github.io/IRS_normalization/understanding_IRS.html and plotted.

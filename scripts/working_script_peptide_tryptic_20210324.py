@@ -50,6 +50,7 @@ def col_to_mIdx(df_int):
     specie_mapper = lambda x : x.split(" ")[4].split("_")[0]
     state_mapper = lambda x : x.split(" ")[4].split("_")[1]
     replicate_mapper = lambda x : x.split(" ")[4].split("_")[2]
+    batch_mapper = lambda x : x.split(" ")[-1]
     
     def map_values_to_value_list(value_list, values):
         """
@@ -75,9 +76,15 @@ def col_to_mIdx(df_int):
     treatment_list = list(treatment_col.unique())
     treatment_code = map_values_to_value_list(treatment_list, treatment_col)
     
-    midx = pd.MultiIndex(levels=[specie_list, state_list, treatment_list, replicate_list], 
-                         codes=[specie_code, state_code, treatment_code, replicate_code])
+    batch_col = df_int.columns.map(batch_mapper)
+    batch_list = list(batch_col.unique())
+    batch_code = map_values_to_value_list(batch_list, batch_col)
+    
+    midx = pd.MultiIndex(levels=[specie_list, state_list, treatment_list, replicate_list, batch_list], 
+                         codes=[specie_code, state_code, treatment_code, replicate_code, batch_code])
     return midx
+
+
 
 def intensities_to_midx_df(df_int):
     """
@@ -194,9 +201,9 @@ experiments = {}
 for cell_line in cell_lines:
     for state in states:
         for replicate in replicates:
-            experiments[cell_line + "_" + state + "_Rep" + str(replicate)] = df_norm.iloc[:, df_norm.columns.get_level_values(3) == "Rep"+str(replicate)][cell_line][state]
-df_norm.iloc[:, df_norm.columns.get_level_values(3) == "Rep"+str(replicate)]
-["A549"]
+            experiments[cell_line + "_" + state + "_" + replicate] = df_norm.iloc[:, df_norm.columns.get_level_values(3) == replicate][cell_line][state]
+df_norm.iloc[:, df_norm.columns.get_level_values(3) == replicate]
+
 rowSums = {}
 for experiment in experiments:
     rowSums[experiment] = experiments[experiment].sum(axis=1)
@@ -204,29 +211,69 @@ for experiment in experiments:
 irs = pd.DataFrame.from_dict(rowSums)
 
 irs_avg = np.exp(np.mean(np.log(irs.replace(0,np.nan)))) #Try np.replace with 0.000001 and np.nan
+irs_avg = np.exp(np.log(irs.replace(0,np.nan)).mean(axis=1))
+
+#irs_avg = np.exp(np.mean(np.log(irs.replace(0, 0.0000001))))
 irs_fac = irs_avg/irs # a = pd.DataFrame([[1,2,3],[2,3,4],[5,6,7]]), b = pd.Series([1,2,3]), b/a OK!
 
 
-for experiment in experiments:
-    (irs_fac["A549_S_Rep1"]*experiments["A549_S_Rep1"].T).T
+#Select from df_norm (exp_sl in pwilmarT) dataframe.
+
+data_irs = pd.DataFrame()
+
+for exp_i in range(np.shape(irs_fac)[1]):
+    irs_fac_exp = irs_fac.iloc[:,exp_i]
+    cell_line, state, rep = irs_fac.iloc[:,exp_i].name.split("_")
+    exp_sl = df_norm.iloc[:,df_norm.columns.get_level_values(3) == rep][cell_line][state]
+    data_irs_exp = exp_sl.multiply(irs_fac_exp, axis = 0)
+    new_cols = [("Reporter intensity corrected " + i + " " + cell_line + "_" + state + "_" + rep) for i in data_irs_exp.columns.get_level_values(0)]
+    data_irs_exp = pd.DataFrame(data_irs_exp.values, columns = new_cols)
+    data_irs = pd.concat([data_irs, data_irs_exp], axis = 1)
+
+midx = col_to_mIdx(data_irs)
+data_irs = intensities_to_midx_df(data_irs)
+
+irs_tmm = calcNormFactors(data_irs.fillna(0)) #refill nan to extualy 0:s
+df_irs_tmm = data_irs/irs_tmm
+
+np.shape(data_irs)
+np.shape(irs_tmm)
+#for experiment in experiments:
+#    (irs_fac["A549_S_Rep1"]*experiments["A549_S_Rep1"].T).T_
+#
 
 df_geoMean  = np.exp(np.log(df_norm.replace(0,np.nan)).mean(axis=1))
-irs_fac = df_geoMean / df_norm.sum(axis=1) htop
+irs_fac = df_geoMean / df_norm.sum(axis=1) #htop
 df_irs =(df_norm.T*irs_fac).T
-
+#
 irs_tmm = calcNormFactors(df_irs)
 df_irs_tmm = df_irs/irs_tmm
 
-a = pd.DataFrame([[2,3,4]]).T
-b = pd.DataFrame([[1,2,3]]).T
 
-a = pd.DataFrame([[1,2,3],[2,3,4],[5,6,7]])
-b = pd.DataFrame([[1,2,3]]).values
-b = pd.DataFrame([[1,2,3]]).T
-b = pd.Series([1,2,3])
+###############
+# sva comBat ##
+###############
+
+df_norm
+
+batch = pd.DataFrame(df_norm.columns.get_level_values(4)).T.values
+
+from combat.pycombat import pycombat
+data_corrected = pycombat(df_norm,batch)
 
 
 
+#a = pd.DataFrame([[2,3,4]]).T
+#b = pd.DataFrame([[1,2,3]]).T
+#
+#a = pd.DataFrame([[1,2,3],[2,3,4],[5,6,7]])
+#b = pd.DataFrame([[1,2,3]]).values
+#b = pd.DataFrame([[1,2,3]]).T
+#
+#a = pd.DataFrame([[1,2,3],[4,5,6],[7,8,9],[10,11,12]])
+#b = pd.Series([1,2,3,4])
+#(a.T*b).T
+#a.multiply(b, axis = 0)
 ########
 # PLOT #
 ########
@@ -262,6 +309,14 @@ plot_intensity_histogram(np.log2(df_norm.replace(0,np.nan)), min_x = 0, max_x = 
 plot_intensity_histogram(df_tmm, min_x = 0, max_x = 25, step = 0.1, title = "TMM")
 plot_intensity_histogram(np.log2(df_irs.replace(0,np.nan)), min_x = 0, max_x = 25, step = 0.1, title = "IRS")
 plot_intensity_histogram(np.log2(df_irs_tmm.replace(0,np.nan)), min_x = 0, max_x = 25, step = 0.1, title = "IRS-TMM")
+
+plot_intensity_histogram(np.log2(data_irs.replace(0,np.nan)), min_x = 10, max_x = 15, step = 0.01, title = "IRS")
+plot_intensity_histogram(np.log2(df_irs_tmm.replace(0,np.nan)), min_x = 10, max_x = 15, step = 0.01, title = "IRS-TMM")
+
+plot_intensity_histogram(np.log2(data_irs.fillna(0)), min_x = 10, max_x = 15, step = 0.01, title = "IRS")
+plot_intensity_histogram(np.log2(df_irs_tmm.fillna(0)), min_x = 10, max_x = 15, step = 0.01, title = "IRS-TMM")
+
+plot_intensity_histogram(np.log2(data_corrected), min_x = 0, max_x = 25, step = 0.01, title = "ComBat")
 
 def plot_intensity_boxplot(df_int, title = "title"):
     """
@@ -302,3 +357,11 @@ plot_intensity_boxplot(df_tmm, title = "TMM")
 plot_intensity_boxplot(np.log2(df_irs.replace(0,np.nan)), title = "IRS")
 plot_intensity_boxplot(np.log2(df_irs_tmm.replace(0,np.nan)), title = "IRS-TMM")
 
+plot_intensity_boxplot(np.log2(data_irs.replace(0,np.nan)), title = "IRS")
+plot_intensity_boxplot(np.log2(df_irs_tmm.replace(0,np.nan)), title = "IRS-TMM")
+
+
+plot_intensity_boxplot(np.log2(data_irs.fillna(0)), title = "IRS")
+plot_intensity_boxplot(np.log2(df_irs_tmm.fillna(0)), title = "IRS-TMM")
+
+plot_intensity_boxplot(np.log2(data_corrected), title = "ComBat")
