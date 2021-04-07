@@ -317,6 +317,7 @@ plot_intensity_histogram(np.log2(data_irs.fillna(0)), min_x = 10, max_x = 15, st
 plot_intensity_histogram(np.log2(df_irs_tmm.fillna(0)), min_x = 10, max_x = 15, step = 0.01, title = "IRS-TMM")
 
 plot_intensity_histogram(np.log2(data_corrected), min_x = 0, max_x = 25, step = 0.01, title = "ComBat")
+plot_intensity_histogram(data_corrected, min_x = 0, max_x = 25, step = 0.01, title = "ComBat")
 
 def plot_intensity_boxplot(df_int, title = "title"):
     """

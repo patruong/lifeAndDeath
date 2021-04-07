@@ -7,6 +7,17 @@
 
 
 # Blog
+## 2021-04-06-07 Protein summarization and Diffacto
+
+Wrote script for summarizing proteins based on top3. It's really slow.
+
+Got Diffacto working on the data. Unclear stuff:
+- In which order should we normalize, filter and run diffacto.
+
+Run of diffacto without combat yields wierd histograms.
+
+Run of diffacto on ComBat normalized data gives much better histograms. Perhaps because the guassian mixtures get "correct" without the batch... otherwise we make the guassian mixture model on the batches rather than peptide and protein concentration, because we group the samples together and there is a batch effect between replicates.
+
 
 ## 2021-03-28 IRS code
 The exact IRS code with normalizing for each batch does not work. Myu old code using geometric average for all batches works better...
