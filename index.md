@@ -7,6 +7,36 @@
 
 
 # Blog
+
+## 2021-04-10-12 More histograms, pca and protein summarization.
+
+Kept trying to fix the batch effect... Combat seems to be doing some wierd fill-ins of 0 (NaN) values, that I don't want. They do not make sense. (I should read combat to understand what to make of this).
+
+Recoded the the raw->SL->IRS->TMM normalization and now it seems to work. I think i got the IRS part wrong ealier. 
+
+It works even better with aitchison.
+
+Protein summarization implemented with average of top 3 intensities, and if there are less than 2 peptide intensities, it is discarded. 
+
+alternative method for protein quantification is given by iPQF (for labelled quantification) [Fischer et al. 2016](https://academic.oup.com/bioinformatics/article/32/7/1040/1743612).
+
+Running triqler for FC 1.05 to 2.00 for the dataset. 
+
+I should to pq-plot for triqler and osw data.
+
+
+
+## 2021-04-08 Aitchison and IRS Normalization remake in R.
+
+Realized that I might have done the historgrams wrong yesterday.
+
+Thought about how to perform the transformations.
+
+ATM - Aitchison -> SL Norm -> ComBat -> Diffacto
+
+Aitchison seem to center the values.
+
+SL Norm does not to seem to make sense. I will replicate pwilmarts R script to see what is going on.
 ## 2021-04-06-07 Protein summarization and Diffacto
 
 Wrote script for summarizing proteins based on top3. It's really slow.

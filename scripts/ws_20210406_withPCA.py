@@ -145,7 +145,7 @@ midx = col_to_mIdx(df_int)
 
 # Raw
 df_int = intensities_to_midx_df(df_int)
-
+df_signal = (df_int != 0)
 # log2
 #df_int = df_int.replace(0, np.nan)
 #df_int = np.log2(df_int)
@@ -179,6 +179,11 @@ data_corrected = pycombat(df_norm.fillna(0),batch[0])
 
 data_corrected["sequence"] = df_raw.Sequence
 data_corrected = data_corrected.set_index("sequence")
+
+df_signal["sequence"] = df_raw.Sequence
+df_signal = df_signal.set_index("sequence")
+
+data_corrected_true_signal = data_corrected*df_signal
 
 diffacto_input = pd.DataFrame(data_corrected.values, index = data_corrected.index.values, columns = data_corrected.columns.get_level_values("experiment").values)
 diffacto_input.to_csv("peptide_tryptic_combat_diffacto_input.csv", sep = ",")
@@ -389,6 +394,7 @@ def aitchison_transform(df):
     df should consist of all samples tagged together in one channel (i.e. A549_S_rep1 etc.)
     """
     df_aitchison = multiplicative_replacement(df)
+    #df_aitchison = closure(df)
     df_idx = df.index
     df_col = df.columns
     df_aitchison = pd.DataFrame(df_aitchison, index = df_idx, columns = df_col)
@@ -396,14 +402,17 @@ def aitchison_transform(df):
 
 df_aitchison = pd.DataFrame()
 
+start = time.time()
 for cell_line in cell_lines:
     for state in states:
         for rep in replicates:
-            df_part = data_corrected.iloc[:, data_corrected.columns.get_level_values(4) == ("_".join([cell_line, state, rep]))]
+            df_part = df_int.iloc[:, df_int.columns.get_level_values("batch") == ("_".join([cell_line, state, rep]))]
             df_part = df_part[(df_part.T != 0).any()]
             df_part = aitchison_transform(df_part)
             df_aitchison = pd.concat([df_aitchison, df_part], axis = 1 )
-
+            print(time.time()-start)
+end=time.time()
+print(end-start)
 
 
 cell_line = "A549"
@@ -425,4 +434,151 @@ df2 = df2[(df2.T != 0).any()]
 pd.concat([df1, df2], axis = 1 )
 
 
+a = pd.DataFrame(np.array([[1,2,3], [4,0,2], [4,5,6], [3,3,3]]))
+b = closure(a)
+b = multiplicative_replacement(a)
+pd.DataFrame(b)
+pd.DataFrame(b).sum(axis=1)
+
+###########################################################
+# PLOT histogram - investigate error in A549_D aitchison ##
+###########################################################
+import seaborn as sns
+
+df_part = df_int.iloc[:, df_int.columns.get_level_values("batch") == 
+                      ("_".join(["A549", "D", "Rep2"]))]
+for i in range(np.shape(df_part)[1]):
+    #plt.hist(np.log2((df_part.iloc[:,i]).replace(0,np.nan)), bins = 1000, 
+    #         histtype="step", label = df_part.iloc[:,i].name[-1])
+    sns.distplot(np.log2((df_part.iloc[:,i]).replace(0,np.nan)), bins = 1000,
+                 label = df_part.iloc[:,i].name[-1], kde = True, hist = False)
+plt.legend()
+
+ax = np.log2(df_part.replace(0,np.nan)).plot.hist(bins=1000, alpha = 0.5)
+
+df_part = df_part[(df_part.T != 0).any()]
+df_ait_part = aitchison_transform(df_part)
+
+
+for i in range(np.shape(df_ait_part)[1]):
+#    plt.hist((df_ait_part.iloc[:,i]).replace(0,np.nan), bins = 1000, 
+#             histtype="step", label = df_part.iloc[:,i].name[-1])
+    sns.distplot(df_ait_part.iloc[:,i], bins = 1000,
+             label = df_part.iloc[:,i].name[-1], kde = True, hist = False)
+plt.legend()
+
+
+
+###########3###################################
+# Plot all aitchison withing batch histogram ##
+###############################################
+
+df_part = df_int.iloc[:, df_int.columns.get_level_values("batch") == 
+                      ("_".join(["A549", "D", "Rep2"]))]
+df_part = df_part[(df_part.T != 0).any()]
+df_ait_part = aitchison_transform(df_part)
+
+sns.distplot(np.log2(df_part.replace(0,np.nan)))
+
+sns.distplot(np.log2(df_part.replace(0,np.nan)).values.flatten())
+
+# raw - all intensities within batch together
+for cell_line in cell_lines:
+    for state in states:
+        for replicate in replicates:
+            df_part = df_int.iloc[:, df_int.columns.get_level_values("batch") == 
+                      ("_".join([cell_line, state, replicate]))]
+            sns.distplot(np.log2(df_part.replace(0,np.nan)),
+                         label = cell_line + "_" + state + "_" + replicate,
+                         hist = False, kde = True)
+plt.legend()
+            
+
+# aitchison - all intensities within batch togethre
+for cell_line in cell_lines:
+    for state in states:
+        for replicate in replicates:
+            df_part = df_int.iloc[:, df_int.columns.get_level_values("batch") == 
+                      ("_".join([cell_line, state, replicate]))]
+            df_part = df_part[(df_part.T != 0).any()]
+            df_ait_part = aitchison_transform(df_part)
+            sns.distplot(df_ait_part,
+                         label = cell_line + "_" + state + "_" + replicate,
+                         hist = False, kde = True)
+plt.legend()
+            
+
+
+
+sns.distplot(df_ait_part)
+sns.distplot(df_ait_part.values.flatten())
+########
+# PLOT #
+########
+
+def plot_intensity_histogram(df_int, min_x = 0, max_x = 30, step = 0.1, title = "title"):
+    """
+    df_int with midx
+    
+    plots the step histogram for {cell_line}_{state}
+    """
+    colors = ['b', 'g', 'r', 'c', 'm', 'y']
+    col_i = 0
+    for cell_line in cell_lines:
+        for state in states:
+            df_state = df_int.iloc[:, df_int.columns.get_level_values(level=1) == state]
+            df_cell_state = df_state.iloc[:, df_state.columns.get_level_values(level=0) == cell_line]
+            plot_label = True
+            for i in range(np.shape(df_cell_state)[1]):
+                if plot_label == True:
+                    plt.hist(df_cell_state.iloc[:,i] , bins=np.arange(min_x,max_x, step), 
+                             histtype="step", color = colors[col_i], alpha = 0.4,
+                             label = cell_line + "_" + state)
+                    plot_label = False
+                else:
+                    plt.hist(df_cell_state.iloc[:,i] , bins=np.arange(min_x,max_x, step), 
+                             histtype="step", color = colors[col_i], alpha = 0.4)
+            col_i+=1
+    plt.title(title)
+    plt.legend()
+    
+
+def plot_intensity_boxplot(df_int, title = "title"):
+    """
+    Boxplot details.
+    # https://stackoverflow.com/questions/41997493/python-matplotlib-boxplot-color
+
+    df_int with midx
+    
+    plots the step histogram for {cell_line}_{state}
+    """
+    colors = ['b', 'g', 'r', 'c', 'm', 'y']
+    col_i = 0
+    pos_i = 0
+    for cell_line in cell_lines:
+        for state in states:
+            df_state = df_int.iloc[:, df_int.columns.get_level_values(level=1) == state]
+            df_cell_state = df_state.iloc[:, df_state.columns.get_level_values(level=0) == cell_line]
+            plot_label = True
+            for i in range(np.shape(df_cell_state)[1]):
+                if plot_label == True:
+                    plt.boxplot(df_cell_state.iloc[:,i].dropna(), positions = [pos_i], patch_artist=True, 
+                                notch=True, medianprops=dict(color="grey"),
+                                boxprops=dict(facecolor = colors[col_i]),)
+                                # No label yet, so if-else does not matter.......
+                    plot_label = False
+                else:
+                    plt.boxplot(df_cell_state.iloc[:,i].dropna(), positions = [pos_i], patch_artist=True, 
+                                notch=True, medianprops=dict(color="grey"),
+                                boxprops=dict(facecolor = colors[col_i]))
+                pos_i+=1
+            col_i+=1
+    plt.title(title)
+    plt.legend()  
+
+plot_intensity_histogram(np.log2(df_int.replace(0,np.nan)), min_x = 0, max_x = 25, step = 0.1, title = "raw")
+plot_intensity_boxplot(np.log2(df_int.replace(0,np.nan)), title = "raw")
+
+plot_intensity_histogram(df_aitchison, min_x = 0, max_x = 1, step = 1/1000, title = "raw")
+plot_intensity_boxplot(df_aitchison, title = "raw")
 
