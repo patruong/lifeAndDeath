@@ -8,6 +8,27 @@
 
 # Blog
 
+## 2021-04-14-15 Looked at a lot of histrograms, PCA and restructured the code and wrote report.
+
+As title mentions... A report in google drive..
+
+
+## 2021-04-13 Protein summarization seem to yield good results.
+
+Pipeline is 
+
+normalize, the ratios of values between samples should be same (pwilmart), to remove batch effect.
+
+Perform aitchison to allow to work with the data in euclidean space.
+
+TOP3 (average of top 3 peptide intensities as protein quantity) to get protein intensities.
+
+raw -> sl -> irs -> tmm -> aitchison -> Top3 
+
+Protein existing in less than 2 samples are discarded.
+
+Going to make the DE protein experiment as well.
+
 ## 2021-04-10-12 More histograms, pca and protein summarization.
 
 Kept trying to fix the batch effect... Combat seems to be doing some wierd fill-ins of 0 (NaN) values, that I don't want. They do not make sense. (I should read combat to understand what to make of this).
