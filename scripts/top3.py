@@ -29,15 +29,15 @@ def top3(df, output_name = "top3.protein.tsv"):
     for col_i in range(len(df.columns)):
         protein_quant_array = []
         for protein in df.index.unique():
-            top3 = df[df.index == protein].iloc[:,col_i].nlargest(3)
-            if len(top3)>2:
-                proteinQuant = top3.mean()
+            top3_peptides = df[df.index == protein].iloc[:,col_i].nlargest(3)
+            if len(top3_peptides)>=2:
+                proteinQuant = top3_peptides.mean()
             else:
                 proteinQuant = np.nan
             protein_quant_array.append(proteinQuant)
         print(time.time()-start)
         protein_quants.append(protein_quant_array)
-        experiment_array.append(top3.name)
+        experiment_array.append(top3_peptides.name)
     
     df_protQuant = pd.DataFrame(protein_quants, index = experiment_array, columns = df.index.unique()).T
     df_protQuant.to_csv(output_name, sep = "\t")

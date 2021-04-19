@@ -8,6 +8,12 @@
 
 # Blog
 
+## 2021-04-18 Looking into Top3 and writing minimal script.
+
+Writing minimal script ws_20210418_top3_minimal_example.py
+
+Change top3 computations from >2 to >=2 peptides. The >= is what is used in LFQ Bench in Tenzer.
+
 ## 2021-04-14-15 Looked at a lot of histrograms, PCA and restructured the code and wrote report.
 
 As title mentions... A report in google drive..
