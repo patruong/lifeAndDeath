@@ -16,15 +16,14 @@ from midx import col_to_mIdx, intensities_to_midx_df
 def load_peptide_data(filename, max_PEP = 0.01, max_missed_cleavages = 3):
     df_raw = pd.read_csv(filename, sep = "\t")
     
-    
-    
     reporter_intensity_corrected_cols = get_all_reporter_intensity_correct()
     
     
     # filter df
     df = df_raw[df_raw.PEP < max_PEP] # 5% PEP removed 9578 peptides
     df = df[df["Missed cleavages"] < max_missed_cleavages] # 0 removed
-    df = df.set_index("Leading razor protein")
+    #df = df.set_index("Leading razor protein")
+    df = df.set_index(['Proteins', "Leading razor protein", 'Unique (Proteins)', 'Unique (Groups)', 'PEP', "Score"])
     
     df_int = df[reporter_intensity_corrected_cols]
     df_int = df_int.drop_duplicates() # Removing duplicate rows, these are most likely 0 rows. 2126 rows dropped

@@ -8,6 +8,42 @@
 
 # Blog
 
+## 2021-04-21 ANOVA and Tukey
+
+Tukey HSD discussion....
+
+https://www.researchgate.net/post/Three-means-comparison-by-t-test-or-ANOVA
+
+
+## 2021-04-20 Top3 again...
+https://pubs.acs.org/doi/10.1021/pr800649s
+
+Top3 is top3 peptides per protein in each injection, excluding shared and modified peptides.
+
+MaxQuant info
+http://www.coxdocs.org/doku.php?id=maxquant:table:peptidetable
+
+General data info
+https://sites.psu.edu/msproteomics/tag/protein-group/
+
+Looking into MANOVA
+
+https://statistics.laerd.com/spss-tutorials/one-way-manova-using-spss-statistics.php
+
+Here are some assumptions for MANOVA.
+
+WHY ANOVA?
+https://statistics.laerd.com/statistical-guides/one-way-anova-statistical-guide.php
+
+## 2021-04-19 Top3 and protein summarization error.
+
+Top3 is not the way I do it.
+
+index should not be leading razor protein.
+
+The average should be between technical replicates.
+
+
 ## 2021-04-18 Looking into Top3 and writing minimal script.
 
 Writing minimal script ws_20210418_top3_minimal_example.py

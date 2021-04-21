@@ -32,8 +32,16 @@ import numpy as np
 os.chdir("/home/ptruong/git/lifeAndDeath/scripts")
 from top3 import protSum_intensities_to_midx_df, aggregate_protein_quantity, get_p_matrix
 
-
 os.chdir("/home/ptruong/git/lifeAndDeath/data/amirata")
 
-df = pd.read_csv("PROT_QUANT_DF_unprocessed.csv", sep = "\t", index_col = 0)
+df = pd.read_csv("PROT_QUANT_DF_raw_PEP_0.1_missed_cleaves_3.csv", sep = "\t", index_col = 0)
 df = protSum_intensities_to_midx_df(df)
+
+
+df.columns.get_level_values("experiment")
+
+
+
+
+
+

@@ -17,3 +17,10 @@ def get_cell_line_states_replicates_from_reporter_intensity_cols(reporter_intens
     states = list(dict.fromkeys(states).keys())
     replicates = list(dict.fromkeys(replicates).keys())
     return cell_lines, states, replicates    
+
+
+def get_cell_lines_states_replicates():
+    cell_lines = ['A549', 'MCF7', 'RKO']
+    states = ['D', 'S']
+    replicates = ['Rep1', 'Rep2', 'Rep3']
+    return cell_lines, states, replicates
