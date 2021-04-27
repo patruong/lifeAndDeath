@@ -18,8 +18,9 @@ from top3 import top3
 os.chdir("/home/ptruong/git/lifeAndDeath/data/amirata")
 
 df = load_peptide_data("peptides tryptic.csv", max_PEP = 0.1, max_missed_cleavages = 3)
-df_protQuant = top3(df, output_name = "PROT_QUANT_DF_raw_PEP_0.1_missed_cleaves_3.csv")
+df_protQuadfnt = top3(df, output_name = "PROT_QUANT_DF_raw_PEP_0.1_missed_cleaves_3.csv")
 
 
+df_ = pd.read_csv("PROT_QUANT_DF_raw_PEP_0.1_missed_cleaves_3.csv", sep = "\t")
 
 

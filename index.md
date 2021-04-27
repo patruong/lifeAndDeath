@@ -8,6 +8,17 @@
 
 # Blog
 
+## 2021-04-27 Checked anova assumptions.
+
+We need to remove A549 Rep1. It messes stuff up...
+
+## 2021-04-22 top3 or score for protein quant.
+
+Score seems to be more reasonable, because if we take top 3, we could get pepeptides which are 0 (nan) on some columns channels and filter away these peptides. I guess the best scoring peptide should be the most accurate representation of protein quantity.
+
+Why can we take one peptide as protein quantity? Because we are not looking at absolut protein quantities, but in the end we want to perform DE anyway, then we just need to have the same relational values.
+
+
 ## 2021-04-21 ANOVA and Tukey
 
 Tukey HSD discussion....
