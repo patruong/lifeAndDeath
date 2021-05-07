@@ -35,6 +35,19 @@ def plot_kde(df_part, log = True, title = "title", legend_size = 6):
     plt.title(title)
     plt.legend(prop={'size': legend_size})
     
+def kde_matrix_all_samples(df_int, log = True, suptitle = "title"):
+    cell_lines, states, replicates = get_variables()
+    treatments = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    i=0
+    for treatment in treatments:
+        for cell_line in cell_lines:
+            for state in states:
+                plt.subplot(10,6,i+1)
+                df_part = df_int.loc[:, df_int.columns.get_level_values("sample") == cell_line + "_" + state + "_" + str(treatment)]
+                plot_kde(df_part, log=log, title = f"{treatment}_{cell_line}_{state}")
+                i+=1
+    plt.suptitle(suptitle)
+
 def kde_matrix_plot_all_channels(df_int, log = True, suptitle ="title"):
     cell_lines, states, replicates = get_variables()
     i = 0

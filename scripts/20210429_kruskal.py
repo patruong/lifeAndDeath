@@ -180,72 +180,82 @@ S.filter(regex="9_A549*"), nan_policy = "omit")
 
 cell_line = "A549"
 
-s_1 = S.filter(regex=f"1_{cell_line}*")
-s_2 = S.filter(regex=f"2_{cell_line}*")
-s_3 = S.filter(regex=f"3_{cell_line}*")
-s_4 = S.filter(regex=f"4_{cell_line}*")
-s_5 = S.filter(regex=f"5_{cell_line}*")
-s_6 = S.filter(regex=f"6_{cell_line}*")
-s_7 = S.filter(regex=f"7_{cell_line}*")
-s_8 = S.filter(regex=f"8_{cell_line}*")
-s_9 = S.filter(regex=f"9_{cell_line}*")
-d_1 = D.filter(regex=f"1_{cell_line}*")
-d_2 = D.filter(regex=f"2_{cell_line}*")
-d_3 = D.filter(regex=f"3_{cell_line}*")
-d_4 = D.filter(regex=f"4_{cell_line}*")
-d_5 = D.filter(regex=f"5_{cell_line}*")
-d_6 = D.filter(regex=f"6_{cell_line}*")
-d_7 = D.filter(regex=f"7_{cell_line}*")
-d_8 = D.filter(regex=f"8_{cell_line}*")
-d_9 = D.filter(regex=f"9_{cell_line}*")
-
-if cell_line == "all":
-    s_1 = S.filter(regex=f"1_.*")
-    s_2 = S.filter(regex=f"2_.*")
-    s_3 = S.filter(regex=f"3_.*")
-    s_4 = S.filter(regex=f"4_.*")
-    s_5 = S.filter(regex=f"5_.*")
-    s_6 = S.filter(regex=f"6_.*")
-    s_7 = S.filter(regex=f"7_.*")
-    s_8 = S.filter(regex=f"8_.*")
-    s_9 = S.filter(regex=f"9_.*")
-    d_1 = D.filter(regex=f"1_.*")
-    d_2 = D.filter(regex=f"2_.*")
-    d_3 = D.filter(regex=f"3_.*")
-    d_4 = D.filter(regex=f"4_.*")
-    d_5 = D.filter(regex=f"5_.*")
-    d_6 = D.filter(regex=f"6_.*")
-    d_7 = D.filter(regex=f"7_.*")
-    d_8 = D.filter(regex=f"8_.*")
-    d_9 = D.filter(regex=f"9_.*")
-
-protein_array = []
-kruskal_p = []
-for protein in d_1.index:
-    try:
-        kruskal = stats.kruskal(s_1[s_1.index == protein],
-                                  s_2[s_2.index == protein],
-                                  s_3[s_3.index == protein],
-                                  s_4[s_4.index == protein],
-                                  s_5[s_5.index == protein],
-                                  s_6[s_6.index == protein],
-                                  s_7[s_7.index == protein],
-                                  s_8[s_8.index == protein],
-                                  s_9[s_9.index == protein],  
-                                  d_1[d_1.index == protein],
-                                  d_2[d_2.index == protein],
-                                  d_3[d_3.index == protein],
-                                  d_4[d_4.index == protein],
-                                  d_5[d_5.index == protein],
-                                  d_6[d_6.index == protein],
-                                  d_7[d_7.index == protein],
-                                  d_8[d_8.index == protein],
-                                  d_9[d_9.index == protein], nan_policy = "omit")
-        protein_array.append(protein)
-        kruskal_p.append(kruskal[1])
-    except:
-        continue    
+def kruskal_treatment_groups(S,D, cell_line = "all"):
+    s_1 = S.filter(regex=f"1_{cell_line}*")
+    s_2 = S.filter(regex=f"2_{cell_line}*")
+    s_3 = S.filter(regex=f"3_{cell_line}*")
+    s_4 = S.filter(regex=f"4_{cell_line}*")
+    s_5 = S.filter(regex=f"5_{cell_line}*")
+    s_6 = S.filter(regex=f"6_{cell_line}*")
+    s_7 = S.filter(regex=f"7_{cell_line}*")
+    s_8 = S.filter(regex=f"8_{cell_line}*")
+    s_9 = S.filter(regex=f"9_{cell_line}*")
+    d_1 = D.filter(regex=f"1_{cell_line}*")
+    d_2 = D.filter(regex=f"2_{cell_line}*")
+    d_3 = D.filter(regex=f"3_{cell_line}*")
+    d_4 = D.filter(regex=f"4_{cell_line}*")
+    d_5 = D.filter(regex=f"5_{cell_line}*")
+    d_6 = D.filter(regex=f"6_{cell_line}*")
+    d_7 = D.filter(regex=f"7_{cell_line}*")
+    d_8 = D.filter(regex=f"8_{cell_line}*")
+    d_9 = D.filter(regex=f"9_{cell_line}*")
     
+    if cell_line == "all":
+        s_1 = S.filter(regex=f"1_.*")
+        s_2 = S.filter(regex=f"2_.*")
+        s_3 = S.filter(regex=f"3_.*")
+        s_4 = S.filter(regex=f"4_.*")
+        s_5 = S.filter(regex=f"5_.*")
+        s_6 = S.filter(regex=f"6_.*")
+        s_7 = S.filter(regex=f"7_.*")
+        s_8 = S.filter(regex=f"8_.*")
+        s_9 = S.filter(regex=f"9_.*")
+        d_1 = D.filter(regex=f"1_.*")
+        d_2 = D.filter(regex=f"2_.*")
+        d_3 = D.filter(regex=f"3_.*")
+        d_4 = D.filter(regex=f"4_.*")
+        d_5 = D.filter(regex=f"5_.*")
+        d_6 = D.filter(regex=f"6_.*")
+        d_7 = D.filter(regex=f"7_.*")
+        d_8 = D.filter(regex=f"8_.*")
+        d_9 = D.filter(regex=f"9_.*")
+    
+    protein_array = []
+    kruskal_p = []
+    for protein in d_1.index:
+        try:
+            kruskal = stats.kruskal(s_1[s_1.index == protein],
+                                      s_2[s_2.index == protein],
+                                      s_3[s_3.index == protein],
+                                      s_4[s_4.index == protein],
+                                      s_5[s_5.index == protein],
+                                      s_6[s_6.index == protein],
+                                      s_7[s_7.index == protein],
+                                      s_8[s_8.index == protein],
+                                      s_9[s_9.index == protein],  
+                                      d_1[d_1.index == protein],
+                                      d_2[d_2.index == protein],
+                                      d_3[d_3.index == protein],
+                                      d_4[d_4.index == protein],
+                                      d_5[d_5.index == protein],
+                                      d_6[d_6.index == protein],
+                                      d_7[d_7.index == protein],
+                                      d_8[d_8.index == protein],
+                                      d_9[d_9.index == protein], nan_policy = "omit")
+            protein_array.append(protein)
+            kruskal_p.append(kruskal[1])
+        except:
+            continue    
+    
+    kruskal_df = pd.DataFrame(kruskal_p, index = protein_array, columns = ["p"])
+    kruskal_df.sort_values(by="p",inplace=True)
+    kruskal_df["q"] = qvalues(kruskal_df, pcolname="p")
+    return kruskal_df
+
+
+
+kruskal_df.p.hist(bins=100)
+kruskal_df.q.hist(bins=100)
 
 s_1[s_1.index == protein]
 S.filter(regex="2_A549*"), nan_policy="omit")

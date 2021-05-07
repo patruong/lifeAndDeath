@@ -14,6 +14,7 @@ import pandas as pd
 import numpy as np
 import time
 
+os.chdir("/home/ptruong/git/lifeAndDeath/data/amirata")
 
 df_raw = pd.read_csv("peptides tryptic.csv", sep = "\t")
 
@@ -73,7 +74,7 @@ for cell_line in cell_lines:
 
 res = pd.concat(dfs, axis = 1)
 res.to_csv("ws_20210422.csv", sep = "\t")
-
+res = pd.read_csv("ws_20210422.csv", sep = "\t", index_col = 0)
 
 
 
@@ -106,7 +107,7 @@ iii) Jag trodde att det här med batcheffekterna inte skulle vara något problem
     kontrol och behandling?  
 """
 
-cell_line = "A549"
+cell_line = "MCF7"
 treatment = "1"
 S = res.copy().filter(regex=(f"^Reporter intensity corrected [{treatment}] {cell_line}_S.*"))
 D = res.copy().filter(regex=(f"^Reporter intensity corrected [{treatment}] {cell_line}_D.*"))
@@ -162,11 +163,47 @@ plt.title("FC S vs D, avg. protQuant")
 import scipy.stats as stats
 
 
+### Make subplot with all samples...ö
+### Make matrix with full shapiro test
+### Check ANOVA assumptions
+from statsmodels.stats.outliers_influence import variance_inflation_factor
 
+X = S.dropna()
 
-
+variance_inflation_factor(X.values, 2)
 # some proteins will always be up-regulated on dead and vice versa.
 
 # look at the same thing for summed proteins.
+
+#####
+cell_line = "MCF7"
+treatment = "1"
+S = res.copy().filter(regex=(f"^.*_S.*"))
+D = res.copy().filter(regex=(f"^.*_D.*"))
+
+col_mapper = lambda x : x.split(" ")[-2] + "_" + x[-4:] + "_" + x.split(" ")[-1].split("_")[0]
+
+S = S.rename(columns=col_mapper)
+D = D.rename(columns=col_mapper)
+SD = pd.concat([S.stack() ,D.stack()], axis = 1).rename(columns={0:"S", 1:"D"})
+
+sns.scatterplot(data = SD, x = "S", y = "D")
+plt.title("FC S vs D (MCF7 C vs T1)")
+
+
+
+shapiro_S = shapiro(S) #Shapiro p > 0.05 indicates normality
+shapiro_D = shapiro(D)
+shapiro_S.q.min() 
+shapiro_D.q.min()
+
+
+
+ 
+
+
+
+
+
 
 

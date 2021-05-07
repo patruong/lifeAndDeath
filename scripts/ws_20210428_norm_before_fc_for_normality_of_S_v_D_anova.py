@@ -27,6 +27,7 @@ from combat.pycombat import pycombat
 
 import matplotlib.pyplot as plt
 import seaborn as sns
+import pylab 
 
 os.chdir("/home/ptruong/git/lifeAndDeath/scripts")
 from get_columns import get_cell_line_state_replicate, get_base_cols_peptide, get_all_reporter_intensity_correct, get_reporter_intensity_without_control
@@ -35,7 +36,7 @@ from get_variables import get_cell_line_states_replicates_from_reporter_intensit
 from midx import col_to_mIdx, intensities_to_midx_df, diffacto_col_to_mIdx, diffacto_to_midx_df
 from pd_functions import drop_zero_row
 from transform import aitchison_transform_part, aitchison_transform, norm_SL, calcNormFactors, irs_norm
-from plot import plot_kde, kde_matrix_plot_all_channels, plot_kde_batch, kde_matrix_plot_batch, plot_intensity_boxplot, plot_diffacto_pca, plot_diffacto_pca_cell_line, pca_plot_ax, get_significant_proteins, volcano_plot 
+from plot import plot_kde, kde_matrix_plot_all_channels, plot_kde_batch, kde_matrix_plot_batch, plot_intensity_boxplot, plot_diffacto_pca, plot_diffacto_pca_cell_line, pca_plot_ax, get_significant_proteins, volcano_plot, kde_matrix_all_samples 
 from top3 import top3, protSum_col_to_mIdx, protSum_intensities_to_midx_df, aggregate_protein_quantity, get_p_matrix
 from de_analysis import get_log2FC_regulation, get_log2FC
 from q_value import qvalues
@@ -172,8 +173,8 @@ for cell_line in cell_lines:
             
 df_fc = pd.concat(fc_array, axis = 1)
 
-S = df_fc.iloc[:, df_fc.columns.get_level_values("state") == "S"]
-D = df_fc.iloc[:, df_fc.columns.get_level_values("state") == "D"]
+S = df_fc["MCF7"].iloc[:, (df_fc["MCF7"].columns.get_level_values("state") == "S")]
+D = df_fc["MCF7"].iloc[:, df_fc["MCF7"].columns.get_level_values("state") == "D"]
 S = pd.DataFrame(S.values, index = S.index, columns = S.columns.get_level_values("experiment"))
 D = pd.DataFrame(D.values, index = D.index, columns = D.columns.get_level_values("experiment"))
 col_mapper = lambda x: x.split("_")[0] + "_" + x.split("_")[1] + "_" + x.split("_")[-1] 
@@ -185,6 +186,10 @@ sns.scatterplot(data = SD, x = "S", y = "D")
 plt.title("FC S vs D ")
 
 
+#######################
+# ASSUMPTION CHECKING #
+#######################
+
 # same thing but for summed protein, perform t-test to filter away trash
 def shapiro(df):
     shapiro = pd.DataFrame(df.apply(stats.shapiro, axis = 1).tolist(), index = df.index)
@@ -195,6 +200,19 @@ shapiro_S = shapiro(S) #Shapiro p > 0.05 indicates normality
 shapiro_D = shapiro(D)
 shapiro_S.pvalue.hist()
 shapiro_D.pvalue.hist()
-shapiro_S.q.min() 
-shapiro_D.q.min()
+S_idx = shapiro_S[shapiro_S.q > 0.05].index
+D_idx = shapiro_D[shapiro_D.q > 0.05].index
+idx = list(set(S_idx) & set(D_idx))
+
+
+stats.probplot(S.stack().values, dist = "norm", plot=pylab)
+stats.probplot(D.stack().values, dist = "norm", plot=pylab)
+
+measurements = np.random.normal(loc = 20, scale = 5, size=100)   
+stats.probplot(measurements, dist="norm", plot=pylab)
+pylab.show()
+
+
+
+
 
